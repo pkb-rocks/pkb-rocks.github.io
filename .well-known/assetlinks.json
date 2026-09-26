@@ -1,0 +1,52 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "it.palsoftware.pastiera",
+      "sha256_cert_fingerprints": [
+        "D5:C0:18:B9:C3:3E:0C:DA:7C:EF:0B:00:6E:D7:39:D4:C6:30:4C:4E:F4:A0:C4:D9:45:4A:53:02:E7:C4:C3:E7",
+        "B2:8A:C0:31:30:08:8B:B2:7A:35:6E:1D:D7:04:B3:5F:27:01:26:84:74:A3:86:C3:48:D0:7E:D9:2F:3E:F7:1A",
+        "0A:F4:F6:B9:F9:64:88:6E:EF:11:40:09:26:A3:88:90:43:88:B1:F6:60:8D:88:EE:BA:90:D5:39:F7:4D:90:99",
+        "C9:20:7E:47:36:9E:42:1A:E6:9D:0E:64:BA:1B:A3:E6:7E:9A:73:9D:94:E4:44:A4:BA:83:C1:08:5C:C0:9A:56"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "it.palsoftware.pastiera.nightly",
+      "sha256_cert_fingerprints": [
+        "8C:5D:CE:86:0A:65:A7:A3:C3:BE:FC:B7:F7:F3:5A:1F:35:23:C1:D0:14:62:27:1D:6A:E0:3F:4D:F4:02:E6:85",
+        "98:66:53:6B:5A:6D:A5:15:2B:0B:A3:0B:12:B3:CF:FA:E5:49:90:C5:20:06:47:F3:52:F4:0E:DB:0F:04:F5:1E",
+        "FE:1D:6F:5C:37:78:43:EF:88:75:D5:98:16:9C:71:AF:DB:29:13:19:36:81:42:8D:14:46:B2:61:DB:67:82:13",
+        "6B:0B:93:66:3A:56:2C:D5:75:B2:69:6D:59:05:A8:0D:4A:B6:84:20:B2:8D:06:98:0F:A7:03:D6:E5:72:ED:E1"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "rocks.pkb.plektra",
+      "sha256_cert_fingerprints": [
+        "B2:8A:C0:31:30:08:8B:B2:7A:35:6E:1D:D7:04:B3:5F:27:01:26:84:74:A3:86:C3:48:D0:7E:D9:2F:3E:F7:1A",
+        "0A:F4:F6:B9:F9:64:88:6E:EF:11:40:09:26:A3:88:90:43:88:B1:F6:60:8D:88:EE:BA:90:D5:39:F7:4D:90:99",
+        "C9:20:7E:47:36:9E:42:1A:E6:9D:0E:64:BA:1B:A3:E6:7E:9A:73:9D:94:E4:44:A4:BA:83:C1:08:5C:C0:9A:56"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "rocks.pkb.plektra.nightly",
+      "sha256_cert_fingerprints": [
+        "98:66:53:6B:5A:6D:A5:15:2B:0B:A3:0B:12:B3:CF:FA:E5:49:90:C5:20:06:47:F3:52:F4:0E:DB:0F:04:F5:1E",
+        "FE:1D:6F:5C:37:78:43:EF:88:75:D5:98:16:9C:71:AF:DB:29:13:19:36:81:42:8D:14:46:B2:61:DB:67:82:13",
+        "6B:0B:93:66:3A:56:2C:D5:75:B2:69:6D:59:05:A8:0D:4A:B6:84:20:B2:8D:06:98:0F:A7:03:D6:E5:72:ED:E1"
+      ]
+    }
+  }
+]

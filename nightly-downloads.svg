@@ -9,16 +9,17 @@
 <path d="M54 292.0H700" stroke="#2b3a41"/>
 <text x="46" y="296.0" text-anchor="end" font-size="12">0</text>
 <path d="M54 241.0H700" stroke="#2b3a41"/>
-<text x="46" y="245.0" text-anchor="end" font-size="12">12.5</text>
+<text x="46" y="245.0" text-anchor="end" font-size="12">62.5</text>
 <path d="M54 190.0H700" stroke="#2b3a41"/>
-<text x="46" y="194.0" text-anchor="end" font-size="12">25</text>
+<text x="46" y="194.0" text-anchor="end" font-size="12">125</text>
 <path d="M54 139.0H700" stroke="#2b3a41"/>
-<text x="46" y="143.0" text-anchor="end" font-size="12">37.5</text>
+<text x="46" y="143.0" text-anchor="end" font-size="12">187.5</text>
 <path d="M54 88.0H700" stroke="#2b3a41"/>
-<text x="46" y="92.0" text-anchor="end" font-size="12">50</text>
+<text x="46" y="92.0" text-anchor="end" font-size="12">250</text>
 <text x="161.7" y="314" transform="rotate(35 161.7 314)" font-size="11">2026-10-07</text>
 <g><title>nightly/v26.10-nightly.07.214711Z</title>
-<text x="161.7" y="283" text-anchor="middle" font-size="16">—</text>
+<rect x="140.7" y="159.0" width="42.0" height="133.0" fill="none" stroke="#3c7b77"/>
+<text x="161.7" y="151.0" text-anchor="middle" font-size="13">163</text>
 </g>
 <text x="377.0" y="314" transform="rotate(35 377.0 314)" font-size="11">2026-10-08</text>
 <g><title>nightly/v26.10-nightly.08.211000Z</title>
@@ -26,8 +27,8 @@
 </g>
 <text x="592.3" y="314" transform="rotate(35 592.3 314)" font-size="11">2026-10-09</text>
 <g><title>nightly/v26.10-nightly.09.203552Z</title>
-<text x="592.3" y="283" text-anchor="middle" font-size="16">—</text>
+<rect x="571.3" y="123.1" width="42.0" height="168.9" fill="#72e6ec"/>
+<text x="592.3" y="115.1" text-anchor="middle" font-size="13">207</text>
 </g>
-<text x="377" y="178" text-anchor="middle" font-size="16">Awaiting valid snapshots</text>
 <text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Outlined bars: 72 h total without a valid 24 h snapshot</text>
 </g></svg>

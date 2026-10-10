@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "repository": "pkb-rocks/plektra",
+  "capture_tolerance_seconds": 7200,
+  "releases": [
+    {
+      "release_id": 406210543,
+      "tag": "nightly/v26.10-nightly.07.214711Z",
+      "published_at": "2026-10-07T22:33:05Z",
+      "channel": "nightly",
+      "prerelease": true,
+      "first_seen_at": "2026-10-10T18:34:29Z",
+      "initial_asset_ids": [
+        619966095
+      ],
+      "asset_changes_detected": false,
+      "snapshots": {
+        "24h": {
+          "due_at": "2026-10-08T22:33:05Z",
+          "captured_at": "2026-10-10T18:34:29Z",
+          "status": "late",
+          "issues": [],
+          "assets": [
+            {
+              "asset_id": 619966095,
+              "name": "Plektra-26.10-nightly.07.214711Z-github.apk",
+              "created_at": "2026-10-07T22:19:48Z",
+              "download_count": 162
+            }
+          ]
+        },
+        "72h": null
+      }
+    },
+    {
+      "release_id": 407272710,
+      "tag": "nightly/v26.10-nightly.08.211000Z",
+      "published_at": "2026-10-08T21:22:45Z",
+      "channel": "nightly",
+      "prerelease": true,
+      "first_seen_at": "2026-10-10T18:34:29Z",
+      "initial_asset_ids": [
+        623044335
+      ],
+      "asset_changes_detected": false,
+      "snapshots": {
+        "24h": {
+          "due_at": "2026-10-09T21:22:45Z",
+          "captured_at": "2026-10-10T18:34:29Z",
+          "status": "late",
+          "issues": [],
+          "assets": [
+            {
+              "asset_id": 623044335,
+              "name": "Plektra-26.10-nightly.08.211000Z-full.apk",
+              "created_at": "2026-10-08T21:22:15Z",
+              "download_count": 187
+            }
+          ]
+        },
+        "72h": null
+      }
+    },
+    {
+      "release_id": 408339144,
+      "tag": "nightly/v26.10-nightly.09.203552Z",
+      "published_at": "2026-10-09T20:56:21Z",
+      "channel": "nightly",
+      "prerelease": true,
+      "first_seen_at": "2026-10-10T18:34:29Z",
+      "initial_asset_ids": [
+        626154944,
+        626155172
+      ],
+      "asset_changes_detected": false,
+      "snapshots": {
+        "24h": null,
+        "72h": null
+      }
+    }
+  ]
+}

@@ -17,6 +17,15 @@
       a { color: #061013; background: #72e6ec; padding: 11px 16px; border-radius: 9px; font-weight: 700; text-decoration: none; }
       a.secondary { color: #dce9eb; background: #172127; border: 1px solid #2b3a41; }
       a:hover { filter: brightness(1.08); }
+      #release-statistics { margin-top: 48px; padding-top: 24px; border-top: 1px solid #2b3a41; }
+      #release-statistics h2 { font-size: 1.5rem; }
+      #release-statistics p { font-size: 1rem; }
+      #release-statistics a { padding: 0; border-radius: 0; background: none; color: #72e6ec; font-weight: inherit; text-decoration: underline; }
+      #release-statistics img { display: block; width: 100%; height: auto; }
+      #release-statistics .table-scroll { overflow-x: auto; }
+      #release-statistics table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+      #release-statistics th, #release-statistics td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #2b3a41; }
+      #release-statistics td:first-child { overflow-wrap: anywhere; min-width: 180px; }
     </style>
   </head>
   <body>
@@ -29,6 +38,15 @@
         <a class="secondary" href="https://pastiera.eu/">Pastiera documentation</a>
         <a class="secondary" href="https://pastiera.eu/donate">Support the project</a>
       </nav>
+      <section id="release-statistics" aria-labelledby="statistics-heading">
+        <h2 id="statistics-heading">Plektra release downloads</h2>
+        <p>APK download snapshots after 24 and 72 hours, compared per release. Downloads across APK variants are combined.</p>
+        <p id="statistics-status" role="status">Loading release statistics…</p>
+        <div id="statistics-results" hidden></div>
+        <p>Downloads do not identify unique users or installations. Missing measurements are shown as gaps.</p>
+        <p><a href="https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/release-stats.json">Download statistics as JSON</a></p>
+      </section>
     </main>
+    <script type="module" src="/release-statistics.mjs"></script>
   </body>
 </html>

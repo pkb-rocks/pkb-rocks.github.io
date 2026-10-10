@@ -8,3 +8,10 @@ also retains its legacy certificate for update continuity.
 
 The custom domain is `pkb.rocks`. Its apex DNS records must point to GitHub
 Pages before HTTPS and Android App Links verification can succeed.
+
+## Release statistics
+
+The hourly `Release download statistics` workflow reads public Plektra releases
+and saves immutable 24h/72h APK download snapshots on this repository's `stats`
+branch. The home page reads that JSON and its SVG charts directly; statistics
+updates do not require a Pages rebuild. See [the data contract](docs/release-statistics.md).

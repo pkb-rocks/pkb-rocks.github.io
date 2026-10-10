@@ -1,0 +1,67 @@
+name: Release download statistics
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-download-statistics
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test collector
+        run: |
+          python3 -m unittest discover -s scripts/tests -p 'test_release_stats.py'
+          node scripts/tests/test-release-statistics.mjs
+
+      - name: Open statistics branch in an isolated worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          stats_dir="$RUNNER_TEMP/plektra-release-stats"
+          if git ls-remote --exit-code --heads origin refs/heads/stats; then
+            git fetch origin refs/heads/stats:refs/remotes/origin/stats
+            git worktree add --detach "$stats_dir" refs/remotes/origin/stats
+          else
+            status=$?
+            if [ "$status" -ne 2 ]; then
+              exit "$status"
+            fi
+            git worktree add --detach "$stats_dir" HEAD
+            git -C "$stats_dir" switch --orphan stats
+          fi
+          echo "STATS_DIR=$stats_dir" >> "$GITHUB_ENV"
+
+      - name: Collect due snapshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATS_REPOSITORY: pkb-rocks/plektra
+        run: |
+          python3 scripts/collect-release-stats.py \
+            --repository "$STATS_REPOSITORY" \
+            --output "$STATS_DIR/release-stats.json" \
+            --charts-dir "$STATS_DIR"
+
+      - name: Save changed statistics
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C "$STATS_DIR" add release-stats.json nightly-downloads.svg stable-downloads.svg
+          if git -C "$STATS_DIR" diff --cached --quiet; then
+            echo "No new snapshots or releases."
+            exit 0
+          fi
+          git -C "$STATS_DIR" config user.name "github-actions[bot]"
+          git -C "$STATS_DIR" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$STATS_DIR" commit -m "Update release download snapshots"
+          git -C "$STATS_DIR" push origin HEAD:refs/heads/stats

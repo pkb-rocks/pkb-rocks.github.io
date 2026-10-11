@@ -50,6 +50,13 @@ function visualSvg(svg, theme) {
     .replace(/<(rect|image)\b([^>]*)\/>/g, (whole, tag, a) => (isVisual(tag, attrs(a)) ? whole : ""))
     .replace(/<text\b([^>]*)>[^<]*<\/text>/g, (whole, a) => (isVisual("text", attrs(a)) ? whole : ""));
   for (const colour of LABEL_COLOURS) body = body.replaceAll(`fill="${colour}"`, `fill="${THEMES[theme].label}"`);
+  // Native dark LED strokes need a light surface after their capture background is removed.
+  if (theme === "nightly") {
+    body = body.replace(/(<text\b[^>]*>LED strip<\/text>)(<image\b([^>]*)\/>)/, (_, label, image, source) => {
+      const a = attrs(source);
+      return `${label}<rect x="${a.x}" y="${a.y}" width="${a.width}" height="${a.height}" fill="#CFDDE7"/>${image}`;
+    });
+  }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${VIEW.width}" height="${VIEW.height}" viewBox="${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}">${body}</svg>`;
 }
 

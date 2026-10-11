@@ -11,6 +11,7 @@
 // Requires rsvg-convert (librsvg) and cwebp.
 
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -72,6 +73,18 @@ for (const theme of Object.keys(THEMES)) {
   }
   console.log(`${theme}: ${slides.length} images`);
 }
+
+// Use image content versions so previews request regenerated screenshots.
+const pagePath = join(pagesRoot, "plektra/index.html");
+const page = readFileSync(pagePath, "utf8").replace(/<img\b[^>]*data-shot="([^"]+)"[^>]*>/g, (tag, id) => {
+  const hash = createHash("sha256");
+  for (const theme of Object.keys(THEMES)) hash.update(readFileSync(join(outDir, "shots", theme, `${id}.webp`)));
+  const version = hash.digest("hex").slice(0, 12);
+  return tag.replace(/ src="([^"]+)"/, (_, source) => ` src="${source.split("?")[0]}?v=${version}"`)
+    .replace(/ data-shot-version="[^"]*"/g, "")
+    .replace(/>$/, ` data-shot-version="${version}">`);
+});
+writeFileSync(pagePath, page);
 
 // Logos: the open mark. The Nightly page is dark, so its key tiles use a light
 // tone instead of the dark brown; the geometry stays identical to the source.

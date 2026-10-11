@@ -46,3 +46,5 @@ the reading position; smaller screens use the horizontal contents strip.
 Showcase assets are rebuilt with `node tools/build-plektra-assets.mjs ../plektra`.
 The hourly statistics workflow updates the public `stats` branch independently
 of website builds; the Plektra repository README embeds its star charts directly.
+
+The asset builder also refreshes screenshot content versions in `plektra/index.html`, so browser previews request new images after a rebuild.

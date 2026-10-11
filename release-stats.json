@@ -109,6 +109,23 @@
         },
         "72h": null
       }
+    },
+    {
+      "release_id": 409857451,
+      "tag": "nightly/v26.10-nightly.11.184948Z",
+      "published_at": "2026-10-11T18:59:43Z",
+      "channel": "nightly",
+      "prerelease": true,
+      "first_seen_at": "2026-10-11T20:20:47Z",
+      "initial_asset_ids": [
+        631547206,
+        631547422
+      ],
+      "asset_changes_detected": false,
+      "snapshots": {
+        "24h": null,
+        "72h": null
+      }
     }
   ]
 }

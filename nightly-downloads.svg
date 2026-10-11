@@ -16,19 +16,23 @@
 <text x="46" y="143.0" text-anchor="end" font-size="12">187.5</text>
 <path d="M54 88.0H700" stroke="#2b3a41"/>
 <text x="46" y="92.0" text-anchor="end" font-size="12">250</text>
-<text x="161.7" y="314" transform="rotate(35 161.7 314)" font-size="11">2026-10-07</text>
+<text x="134.8" y="314" transform="rotate(35 134.8 314)" font-size="11">2026-10-07</text>
 <g><title>nightly/v26.10-nightly.07.214711Z</title>
-<rect x="140.7" y="159.0" width="42.0" height="133.0" fill="none" stroke="#3c7b77"/>
-<text x="161.7" y="151.0" text-anchor="middle" font-size="13">163</text>
+<rect x="113.8" y="159.0" width="42.0" height="133.0" fill="none" stroke="#3c7b77"/>
+<text x="134.8" y="151.0" text-anchor="middle" font-size="13">163</text>
 </g>
-<text x="377.0" y="314" transform="rotate(35 377.0 314)" font-size="11">2026-10-08</text>
+<text x="296.2" y="314" transform="rotate(35 296.2 314)" font-size="11">2026-10-08</text>
 <g><title>nightly/v26.10-nightly.08.211000Z</title>
-<text x="377.0" y="283" text-anchor="middle" font-size="16">—</text>
+<text x="296.2" y="283" text-anchor="middle" font-size="16">—</text>
 </g>
-<text x="592.3" y="314" transform="rotate(35 592.3 314)" font-size="11">2026-10-09</text>
+<text x="457.8" y="314" transform="rotate(35 457.8 314)" font-size="11">2026-10-09</text>
 <g><title>nightly/v26.10-nightly.09.203552Z</title>
-<rect x="571.3" y="123.1" width="42.0" height="168.9" fill="#72e6ec"/>
-<text x="592.3" y="115.1" text-anchor="middle" font-size="13">207</text>
+<rect x="436.8" y="123.1" width="42.0" height="168.9" fill="#72e6ec"/>
+<text x="457.8" y="115.1" text-anchor="middle" font-size="13">207</text>
+</g>
+<text x="619.2" y="314" transform="rotate(35 619.2 314)" font-size="11">2026-10-11</text>
+<g><title>nightly/v26.10-nightly.11.184948Z</title>
+<text x="619.2" y="283" text-anchor="middle" font-size="16">—</text>
 </g>
 <text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Outlined bars: 72 h total without a valid 24 h snapshot</text>
 </g></svg>

@@ -464,7 +464,7 @@
       .star-history picture { display: block; max-width: 840px; margin-top: 24px; }
       @media (max-width: 760px) { .statistics-results { grid-template-columns: 1fr; } }
     </style>
-    <link rel="stylesheet" href="/plektra/assets/contents.css">
+    <link rel="stylesheet" href="/plektra/assets/contents.css?v=729121e13d76">
   </head>
   <body>
     <header class="top">
@@ -836,7 +836,7 @@
     </dialog>
 
     <script type="module" src="/release-statistics.mjs"></script>
-    <script type="module" src="/plektra/assets/star-history.js"></script>
+    <script type="module" src="/plektra/assets/star-history.js?v=5a46d8a0ec81"></script>
     <script type="module">
       import { findAsset, formatDate, latestRelease, versionOf } from "/plektra/assets/releases.js";
 
@@ -948,7 +948,7 @@
         for (const el of document.querySelectorAll("[data-reveal], .rule")) revealer.observe(el);
       }
 
-      import("/plektra/assets/contents.js");
+      import("/plektra/assets/contents.js?v=8d8e473fc07f");
 
       // Screenshot viewer.
       const viewer = document.querySelector("[data-viewer]");

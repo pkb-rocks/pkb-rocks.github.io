@@ -6,7 +6,7 @@
   .toc .wrap { width: 100%; margin: 0; }
   .toc ol { display: block; overflow: visible; }
   .toc li { position: absolute; right: 0; top: 0; margin: 0 !important; }
-  .toc a { display: block; padding: 3px 0 3px 12px; text-transform: uppercase; font: 650 13px/1.15 var(--sans); letter-spacing: .015em; color: var(--muted); pointer-events: auto; text-align: right; text-shadow: 0 0 5px var(--bg), 0 0 10px var(--bg); }
+  .toc a { display: block; padding: 3px 0 3px 12px; text-transform: uppercase; font: 650 13px/1.15 var(--sans); letter-spacing: .015em; color: var(--muted); pointer-events: auto; text-align: right; text-shadow: none; }
   .toc .sub a { font-size: 13px; }
   .toc a span { margin: 0; font: inherit; }
   .toc a .contents-number { display: none; }
@@ -16,7 +16,7 @@
   .toc a[aria-current="true"] .contents-letter { color: var(--text); }
   .toc a:hover .contents-letter { color: var(--accent-text); }
   .toc-progress { display: none; }
-  .contents-ruler { display: block; position: fixed; inset: 68px 0 0 auto; width: 48px; z-index: 11; color: var(--muted); cursor: crosshair; overflow: hidden; background: linear-gradient(90deg, transparent, var(--bg) 70%); touch-action: none; }
+  .contents-ruler { display: block; position: fixed; inset: 68px 0 0 auto; width: 48px; z-index: 11; color: var(--muted); cursor: crosshair; overflow: hidden; background: transparent; touch-action: none; }
   .contents-ruler .tick { position: absolute; right: 0; width: 9px; height: 1px; background: var(--line); }
   .contents-ruler .tick.major { width: 17px; background: var(--muted); }
   .contents-ruler .tick-label { position: absolute; right: 22px; top: -5px; font: 9px/1 var(--mono); }

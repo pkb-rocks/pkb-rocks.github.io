@@ -98,7 +98,7 @@ function update() {
     const dockY = 96 + index * 22 + 30 * (1 - followingFlip);
     const dockScale = 1 - (1 - queueScale) * followingFlip;
     const horizontal = (glyph, baseline, scale) => ({x: innerWidth - 60 - (measure.total - glyph.center) * scale, y: baseline, angle: 0, scale});
-    const vertical = (glyph, baseline) => ({x: innerWidth - 24, y: baseline + (measure.total - glyph.center)*rideScale, angle: -90, scale: rideScale});
+    const vertical = (glyph, baseline) => ({x: innerWidth - 24, y: baseline + glyph.center*rideScale, angle: 90, scale: rideScale});
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     item.letters.forEach((letter, letterIndex) => {
       const glyph = measure.glyphs[letterIndex];
@@ -113,9 +113,9 @@ function update() {
         phase = detach;
       }
       const stagger = .045;
-      const order = item.letters.length - 1 - letterIndex;
+      const order = letterIndex;
       const t = ease(clamp(phase*(1 + (item.letters.length-1)*stagger) - order*stagger, 0, 1));
-      const bend = flip > 0 ? 0 : -60 * Math.sin(Math.PI*t);
+      const bend = -24 * Math.sin(Math.PI*t);
       const x = from.x + (to.x-from.x)*t + bend;
       const letterY = from.y + (to.y-from.y)*t;
       const angle = from.angle + (to.angle-from.angle)*t;

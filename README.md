@@ -8,7 +8,7 @@ also retains its legacy certificate for update continuity.
 
 ## Plektra product page
 
-`/plektra/` is the Plektra overview. Its Stable/Nightly switch changes the page
+`/` is the Plektra product page. Its Stable/Nightly switch changes the page
 theme: Stable is light with the orange mark, Nightly is dark with the blue mark.
 
 Permanent download links resolve the newest release through the GitHub API, so
@@ -39,7 +39,7 @@ and saves immutable 24h/72h APK download snapshots on this repository's `stats`
 branch. The home page reads that JSON and its SVG charts directly; statistics
 updates do not require a Pages rebuild. See [the data contract](docs/release-statistics.md).
 
-The Plektra product page at `/plektra/` combines the device showcase, feature
+The Plektra product page at `/` combines the device showcase, feature
 chapters, Stable and Nightly download links, release download statistics, and a
 separate GitHub star history. Its right-hand desktop contents navigation follows
 the reading position; smaller screens use the horizontal contents strip.
@@ -47,4 +47,4 @@ Showcase assets are rebuilt with `node tools/build-plektra-assets.mjs ../plektra
 The hourly statistics workflow updates the public `stats` branch independently
 of website builds; the Plektra repository README embeds its star charts directly.
 
-The asset builder also refreshes screenshot content versions in `plektra/index.html`, so browser previews request new images after a rebuild.
+The asset builder also refreshes screenshot content versions in `index.html`, so browser previews request new images after a rebuild.

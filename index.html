@@ -1,53 +1,991 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-channel="stable">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="PKB.rocks builds open source tools for physical keyboard devices.">
-    <title>PKB.rocks</title>
+    <title>Plektra: advanced (hardware) keyboard control on Android</title>
+    <meta name="description" content="Free software under GPLv3, with source code you can inspect, modify and share.">
+    <meta property="og:title" content="Plektra: advanced (hardware) keyboard control on Android">
+    <meta property="og:description" content="Configurable layouts, input tools and keyboard controls for Android phones with physical keyboards.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pkb.rocks/">
+    <link rel="canonical" href="https://pkb.rocks/">
+    <meta property="og:image" content="https://pkb.rocks/plektra/assets/shots/stable/01-devices.webp">
+    <link rel="icon" href="/plektra/assets/logo-stable.svg" type="image/svg+xml" data-favicon>
+    <script>
+      // Apply the saved channel before first paint. ?channel=nightly wins over the saved choice.
+      (() => {
+        const fromUrl = new URLSearchParams(location.search).get("channel");
+        let saved = null;
+        try { saved = localStorage.getItem("plektra-channel"); } catch {}
+        const channel = [fromUrl, saved].find((c) => c === "stable" || c === "nightly") ?? "stable";
+        document.documentElement.dataset.channel = channel;
+        // Reveal animations only with motion allowed; content stays visible if the module never runs.
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("reveal-on");
+          setTimeout(() => { if (!window.plektraReveal) document.documentElement.classList.remove("reveal-on"); }, 3000);
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
     <style>
-      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      :root, .theme-stable {
+        --bg: #f4f1e9;
+        --surface: #ebe6da;
+        --text: #1f1d19;
+        --muted: #5d5a52;
+        --line: #d8d0bf;
+        --accent: #fc7a0f;
+        --accent-text: #a8500a;
+        --on-accent: #1d0f00;
+        color-scheme: light;
+      }
+      [data-channel="nightly"], .theme-nightly {
+        --bg: #0b1220;
+        --surface: #121c2e;
+        --text: #e6edf5;
+        --muted: #93a3b5;
+        --line: #22314a;
+        --accent: #2f80ed;
+        --accent-text: #8fbaf5;
+        --on-accent: #ffffff;
+        color-scheme: dark;
+      }
+      :root {
+        --sans: "IBM Plex Sans", system-ui, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, monospace;
+      }
+
       * { box-sizing: border-box; }
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0a0f14; color: #edf8fa; }
-      main { width: min(680px, calc(100% - 40px)); padding: 64px 0; }
-      .mark { color: #59d7df; font: 700 0.82rem/1.2 ui-monospace, SFMono-Regular, monospace; letter-spacing: .14em; text-transform: uppercase; }
-      h1 { margin: 18px 0 16px; font-size: clamp(3rem, 11vw, 6.5rem); line-height: .92; letter-spacing: -.07em; }
-      p { max-width: 570px; color: #a9bbc0; font-size: 1.16rem; line-height: 1.65; }
-      nav { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
-      a { color: #061013; background: #72e6ec; padding: 11px 16px; border-radius: 9px; font-weight: 700; text-decoration: none; }
-      a.secondary { color: #dce9eb; background: #172127; border: 1px solid #2b3a41; }
-      a:hover { filter: brightness(1.08); }
-      #release-statistics { margin-top: 48px; padding-top: 24px; border-top: 1px solid #2b3a41; }
-      #release-statistics h2 { font-size: 1.5rem; }
-      #release-statistics p { font-size: 1rem; }
-      #release-statistics a { padding: 0; border-radius: 0; background: none; color: #72e6ec; font-weight: inherit; text-decoration: underline; }
-      #release-statistics img { display: block; width: 100%; height: auto; }
-      #release-statistics .table-scroll { overflow-x: auto; }
-      #release-statistics table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-      #release-statistics th, #release-statistics td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #2b3a41; }
-      #release-statistics td:first-child { overflow-wrap: anywhere; min-width: 180px; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 400 1.0625rem/1.6 var(--sans);
+        transition: background-color .35s ease, color .35s ease;
+      }
+      a { color: inherit; }
+      a:focus-visible, button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+      img { display: block; max-width: 100%; height: auto; }
+      h1, h2, h3 { font-family: var(--sans); font-weight: 500; letter-spacing: -0.015em; margin: 0; }
+      .wrap { width: min(1200px, calc(100% - 48px)); margin-inline: auto; }
+
+      /* Header */
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        transition: background-color .35s ease;
+      }
+      .top > .wrap { display: flex; align-items: center; gap: 28px; min-height: 68px; width: calc(100% - 48px); margin-inline: 24px; }
+      .brand { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 600; text-decoration: none; }
+      .brand img { width: 44px; height: 44px; }
+      .gh-link { margin-left: auto; font-size: .95rem; color: var(--muted); text-decoration: none; }
+      .gh-link:hover { color: var(--text); }
+
+      /* Table of contents: always visible below the header, marks the current section. */
+      .toc { border-top: 1px solid var(--line); position: relative; }
+      .toc ol {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .toc ol::-webkit-scrollbar { display: none; }
+      .toc a {
+        position: relative;
+        display: block;
+        padding: 12px 0;
+        font-size: .92rem;
+        color: var(--muted);
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .toc a span { margin-right: 8px; font: 500 .8rem var(--mono); }
+      .toc .sub a { font-size: .86rem; }
+      .toc .sub + li:not(.sub) { margin-left: 6px; }
+      .toc a:hover { color: var(--text); }
+      .toc a[aria-current="true"] { color: var(--text); }
+      .toc a[aria-current="true"] span { color: var(--accent-text); }
+      .toc a[aria-current="true"]::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--accent);
+      }
+      .toc-progress {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        width: 100%;
+        height: 1px;
+        background: var(--accent);
+        transform-origin: left;
+        transform: scaleX(var(--progress, 0));
+        opacity: .55;
+      }
+      section, .chapter { scroll-margin-top: 124px; }
+      .switch {
+        display: inline-flex;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+      }
+      .switch button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font: 500 .88rem var(--sans);
+        padding: 6px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .switch button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+      /* Hero */
+      .hero { padding: 88px 0 72px; }
+      .hero-text { max-width: 1100px; }
+      h1 { font-size: clamp(3rem, 6.2vw, 5.4rem); line-height: 1.04; max-width: 24ch; }
+      .lede { margin: 26px 0 0; max-width: 46ch; font-size: 1.22rem; color: var(--muted); }
+      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 34px; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        min-height: 46px;
+        padding: 0 20px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--text);
+        font: 500 1rem var(--sans);
+        text-decoration: none;
+      }
+      .btn:hover { border-color: var(--muted); }
+      .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+      .btn.primary:hover { filter: brightness(1.06); }
+      .hero-meta { margin: 18px 0 0; font-size: .95rem; color: var(--muted); }
+      .hero-meta code { font: 500 .88rem var(--mono); color: var(--text); }
+      .hero-shot {
+        margin-top: 64px;
+        padding: clamp(16px, 4vw, 48px);
+        border-radius: 22px;
+        background: var(--surface);
+        transition: background-color .35s ease;
+      }
+      .hero-shot img { margin-inline: auto; width: min(1100px, 100%); }
+
+      /* Sections */
+      section { padding: 104px 0; border-top: 1px solid var(--line); }
+      .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 48px; margin-bottom: 56px; }
+      h2 { font-size: clamp(2.5rem, 5vw, 4.2rem); line-height: 1; }
+      .section-head p { margin: 4px 0 0; max-width: 52ch; color: var(--muted); }
+
+      /* Features */
+      .chapter-nav { display: flex; flex-wrap: wrap; gap: 10px; margin: -24px 0 56px; }
+      .chapter-nav a {
+        text-decoration: none;
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: .95rem;
+      }
+      .chapter-nav a span { color: var(--muted); margin-left: 6px; }
+      .chapter-nav a:hover { border-color: var(--muted); }
+      .chapter {
+        display: grid;
+        grid-template-columns: minmax(200px, .55fr) minmax(0, 2fr);
+        gap: 48px;
+        padding: 56px 0;
+        border-top: 1px solid var(--line);
+      }
+      .chapter-title { position: sticky; top: 140px; align-self: start; }
+      .chapter-title h3 { font-size: 2.2rem; line-height: 1.05; }
+      .chapter-title p { margin: 12px 0 0; color: var(--muted); font-size: .98rem; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 28px; }
+      .feature { margin: 0; }
+      .shot {
+        display: block;
+        width: 100%;
+        padding: 18px;
+        border: 0;
+        border-radius: 16px;
+        background: var(--surface);
+        cursor: zoom-in;
+        transition: background-color .35s ease;
+      }
+      .shot:hover { outline: 1px solid var(--line); }
+      .feature h4 { margin: 18px 0 4px; font: 600 1.08rem/1.35 var(--sans); }
+      .feature p { margin: 0; color: var(--muted); font-size: .98rem; }
+
+      /* Downloads */
+      .channels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+      .channel {
+        padding: 36px;
+        border-radius: 22px;
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+      .channel header { display: flex; align-items: center; gap: 14px; }
+      .channel header img { width: 48px; height: 48px; }
+      .channel h3 { font-size: 2.3rem; line-height: 1; }
+      .channel .desc { margin: 18px 0 26px; color: var(--muted); max-width: 44ch; }
+      .channel dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0 0 28px; font-size: .95rem; }
+      .channel dt { color: var(--muted); }
+      .channel dd { margin: 0; font: 500 .9rem var(--mono); overflow-wrap: anywhere; }
+      .channel .links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; font-size: .95rem; }
+      .channel .links a { color: var(--accent-text); text-underline-offset: 4px; }
+      .channel .planned { margin: 0; padding: 14px 16px; border-radius: 10px; background: var(--surface); color: var(--muted); font-size: .95rem; }
+      .distribution { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 24px; margin-top: 36px; }
+      .distribution a { display: flex; align-items: center; gap: 16px; padding: 20px 0; border-block: 1px solid var(--line); text-decoration: none; }
+      .distribution a:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+      .distribution img { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+      .distribution img.fdroid { width: 90px; }
+      .distribution strong, .distribution small { display: block; }
+      .distribution small { color: var(--muted); margin-top: 3px; }
+      .variant-note { margin: 28px 0 0; max-width: 80ch; color: var(--muted); font-size: .95rem; }
+
+      .both { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 48px; margin-top: 88px; }
+      .both h3 { font-size: 2.4rem; line-height: 1.05; }
+      .both > div > p { margin: 14px 0 0; color: var(--muted); }
+      .both-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+      .both-cases div { border-top: 3px solid var(--case); padding-top: 18px; }
+      .both-cases .from-nightly { --case: #2f80ed; }
+      .both-cases .from-stable { --case: #fc7a0f; }
+      .both-cases h4 { margin: 0 0 6px; font: 600 1.05rem var(--sans); }
+      .both-cases p { margin: 0; color: var(--muted); }
+
+      /* Devices */
+      .devices { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); }
+      .devices div { padding: 26px 26px 0 0; }
+      .devices div:nth-child(even) { padding-left: 26px; border-left: 1px solid var(--line); }
+      .devices div:nth-child(n + 3) { border-top: 1px solid var(--line); margin-top: 26px; }
+      .devices h3 { font-size: 1.9rem; }
+      .devices p { margin: 8px 0 0; color: var(--muted); font-size: .98rem; }
+      .devices-note { margin-top: 36px; color: var(--muted); }
+
+      /* Build */
+      .terminal {
+        position: relative;
+        margin: 0;
+        padding: 26px 28px;
+        border-radius: 16px;
+        background: #0a0f18;
+        color: #dfe7f1;
+        font: 400 .95rem/1.8 var(--mono);
+        overflow-x: auto;
+      }
+      .terminal .prompt { color: #6f7f93; user-select: none; }
+      .copy {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        border: 1px solid #2b3647;
+        background: transparent;
+        color: #dfe7f1;
+        font: 500 .82rem var(--sans);
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .build-note { margin: 18px 0 0; color: var(--muted); font-size: .95rem; }
+
+      /* Footer */
+      footer { padding: 56px 0 72px; border-top: 1px solid var(--line); color: var(--muted); font-size: .95rem; }
+      footer .wrap { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end; }
+      footer p { margin: 0; max-width: 62ch; }
+      footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }
+      footer a { color: var(--text); }
+
+      /* Viewer */
+      dialog {
+        width: min(1320px, 94vw);
+        max-height: 94vh;
+        padding: clamp(16px, 3vw, 40px);
+        border: 0;
+        border-radius: 20px;
+        background: var(--surface);
+        color: var(--text);
+      }
+      dialog::backdrop { background: rgb(5 8 14 / .78); }
+      dialog img { width: 100%; height: auto; max-height: 78vh; object-fit: contain; }
+      dialog .bar { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+      dialog .bar p { margin: 0 auto 0 0; font-weight: 600; }
+      dialog .bar button {
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--text);
+        font: 500 .92rem var(--sans);
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      /* Download buttons: the CalVer version is the date, so the date is the button's anchor. */
+      .dl {
+        display: inline-flex;
+        align-items: stretch;
+        min-height: 66px;
+        border-radius: 14px;
+        overflow: hidden;
+        text-decoration: none;
+        border: 1px solid transparent;
+      }
+      .dl .tile {
+        display: grid;
+        place-content: center;
+        min-width: 74px;
+        padding: 8px 14px;
+        text-align: center;
+        background: rgb(0 0 0 / .16);
+      }
+      .dl .tile small { display: block; font: 500 .72rem/1.2 var(--mono); opacity: .85; }
+      .dl .tile strong { display: block; font: 400 2.1rem/1 var(--sans); letter-spacing: -.02em; }
+      .dl .label { display: grid; align-content: center; gap: 1px; padding: 10px 20px 10px 16px; }
+      .dl .label b { font: 600 1rem/1.25 var(--sans); }
+      .dl .label span { font-size: .86rem; opacity: .86; }
+      .dl.nightly { background: #2f80ed; color: #ffffff; }
+      .dl.nightly .tile { background: #1b5fc4; }
+      .dl.stable { background: #fc7a0f; color: #1d0f00; }
+      .dl.stable .tile { background: #e0650a; color: #1d0f00; }
+      .dl.pending { background: var(--surface); color: var(--muted); cursor: not-allowed; }
+      .dl.pending .tile { background: rgb(127 127 127 / .14); color: var(--muted); }
+      .dl:not(.pending):hover { filter: brightness(1.06); }
+      [data-channel="nightly"] .actions .dl.nightly { order: -1; }
+      .source-link { display: inline-block; margin-top: 18px; font-size: .95rem; color: var(--muted); }
+
+      .calver { margin: 0 0 6px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 0; }
+      .calver .ym { font: 400 clamp(3rem, 6vw, 4.4rem)/.9 var(--sans); letter-spacing: -.03em; }
+      .calver .rest { font: 500 1.05rem var(--mono); color: var(--muted); margin-left: 4px; }
+      .calver .rest b { color: var(--text); font-weight: 500; }
+      .calver-date { margin: 0 0 26px; font-size: .98rem; color: var(--muted); }
+      .calver-date strong { color: var(--text); font-weight: 600; }
+
+      /* Section labels and the highlights overview */
+      .label-row { display: flex; gap: 10px; margin-bottom: 18px; font: 500 .85rem var(--mono); color: var(--muted); }
+      .label-row span:first-child { color: var(--accent-text); }
+      .highlights {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        background: var(--line);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .highlights li { background: var(--bg); transition: background-color .35s ease; }
+      .highlights a { display: block; height: 100%; padding: 30px 30px 34px 0; text-decoration: none; }
+      .highlights li:nth-child(3n+2) a, .highlights li:nth-child(3n) a { padding-left: 30px; }
+      .highlights .num { font: 500 .85rem var(--mono); color: var(--accent-text); }
+      .highlights h3 { margin: 14px 0 8px; font-size: 1.9rem; line-height: 1.05; }
+      .highlights p { margin: 0; color: var(--muted); font-size: .98rem; }
+      .highlights a:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+
+      /* Scroll reveal, modelled on the reference: fade, rise 28px and unblur once. */
+      .reveal-on [data-reveal] {
+        opacity: 0;
+        transform: translateY(28px);
+        filter: blur(8px);
+        transition:
+          opacity .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s),
+          transform .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s),
+          filter .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s);
+      }
+      .reveal-on [data-reveal].is-in { opacity: 1; transform: none; filter: none; }
+      .rule { height: 1px; background: var(--line); transform-origin: left; }
+      .reveal-on .rule { transform: scaleX(0); transition: transform .7s cubic-bezier(.45, 0, .2, 1); }
+      .reveal-on .rule.is-in { transform: scaleX(1); }
+      section.drawn { border-top: 0; padding-top: 0; }
+      section.drawn > .wrap { padding-top: 104px; }
+      @media (max-width: 640px) { section.drawn > .wrap { padding-top: 76px; } }
+
+      @media (max-width: 960px) {
+        .highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .highlights li:nth-child(n) a { padding: 26px 22px 30px 0; }
+        .highlights li:nth-child(2n) a { padding-left: 22px; }
+      }
+      @media (max-width: 640px) {
+        .highlights { grid-template-columns: 1fr; }
+        .highlights li:nth-child(n) a { padding: 24px 0 26px; }
+        .dl { width: 100%; }
+      }
+
+      @media (max-width: 960px) {
+        .section-head, .chapter, .both, footer .wrap { grid-template-columns: 1fr; gap: 28px; }
+        .chapter-title { position: static; }
+        .channels { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 640px) {
+        .top > .wrap { gap: 12px; flex-wrap: wrap; padding-block: 8px; width: calc(100% - 32px); margin-inline: 16px; }
+        .brand { font-size: 1.25rem; }
+        .brand img { width: 40px; height: 40px; }
+        .grid, .both-cases, .devices { grid-template-columns: 1fr; }
+        .devices div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 26px; }
+        .channel { padding: 26px; }
+        section { padding: 76px 0; }
+        .hero { padding-top: 56px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        * { transition: none !important; }
+      }
+      .release-statistics { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
+      .release-statistics > p, .star-history p { color: var(--muted); }
+      .statistics-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+      .statistics-channel img, .star-history img { display: block; width: 100%; height: auto; }
+      .statistics-channel h3 { margin-bottom: 16px; }
+      .statistics-channel summary { padding: 16px 0; cursor: pointer; }
+      .table-scroll { overflow-x: auto; }
+      .table-scroll table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+      .table-scroll caption { text-align: left; padding: 12px 0; color: var(--muted); }
+      .table-scroll th, .table-scroll td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+      .table-scroll td:first-child { min-width: 180px; overflow-wrap: anywhere; }
+      .star-history { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
+      .star-history picture { display: block; max-width: 840px; margin-top: 24px; }
+      @media (max-width: 760px) { .statistics-results { grid-template-columns: 1fr; } }
     </style>
+    <link rel="stylesheet" href="/plektra/assets/contents.css">
   </head>
   <body>
-    <main>
-      <div class="mark">PKB.rocks</div>
-      <h1>Plektra</h1>
-      <p>Open source input tools for phones with physical keyboards. Plektra continues the work started by Pastiera.</p>
-      <nav aria-label="Project links">
-        <a href="/plektra/">Plektra overview</a>
-        <a class="secondary" href="https://github.com/pkb-rocks/plektra">View Plektra on GitHub</a>
-        <a class="secondary" href="https://pastiera.eu/">Pastiera documentation</a>
-        <a class="secondary" href="https://pastiera.eu/donate">Support the project</a>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="#">
+          <img src="/plektra/assets/logo-stable.svg" alt="" width="44" height="44" data-logo>
+          <span data-channel-name>Plektra</span>
+        </a>
+        <a class="gh-link" href="https://github.com/pkb-rocks/plektra">GitHub</a>
+        <div class="switch" role="group" aria-label="Release channel">
+          <button type="button" data-set-channel="stable" aria-pressed="true">Stable</button>
+          <button type="button" data-set-channel="nightly" aria-pressed="false">Nightly</button>
+        </div>
+      </div>
+      <nav class="toc" aria-label="Contents">
+        <div class="wrap">
+          <ol>
+            <li><a href="#highlights"><span>01</span>Highlights</a></li>
+            <li><a href="#features"><span>02</span>Features</a></li>
+            <li class="sub"><a href="#keys">Keys and bar</a></li>
+            <li class="sub"><a href="#text">Text and tools</a></li>
+            <li class="sub"><a href="#look">Look and layout</a></li>
+            <li><a href="#download"><span>03</span>Download</a></li>
+            <li><a href="#devices"><span>04</span>Devices</a></li>
+            <li><a href="#build"><span>05</span>Build</a></li>
+          </ol>
+        </div>
+        <div class="toc-progress" data-toc-progress></div>
       </nav>
-      <section id="release-statistics" aria-labelledby="statistics-heading">
-        <h2 id="statistics-heading">Plektra release downloads</h2>
-        <p>APK download snapshots after 24 and 72 hours, compared per release. Downloads across APK variants are combined.</p>
-        <p id="statistics-status" role="status">Loading release statistics…</p>
-        <div id="statistics-results" hidden></div>
-        <p>Downloads do not identify unique users or installations. Missing measurements are shown as gaps.</p>
-        <p><a href="https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/release-stats.json">Download statistics as JSON</a></p>
+    </header>
+
+    <main>
+      <div class="wrap hero" id="plektra">
+        <div class="hero-text" data-reveal-group data-stagger>
+          <h1 data-reveal>Advanced (hardware) keyboard control on Android</h1>
+          <p class="lede" data-reveal>Free software under GPLv3, with source code you can inspect, modify and share.</p>
+          <div class="actions" data-reveal>
+            <a class="dl stable pending" data-dl="stable" role="link" aria-disabled="true">
+              <span class="tile"><small>Stable</small><strong data-dl-tile>26.10</strong></span>
+              <span class="label"><b>Download Stable</b><span data-dl-sub>Planned for 26.10</span></span>
+            </a>
+            <a class="dl nightly" href="/plektra/download/nightly/" data-dl="nightly">
+              <span class="tile"><small data-dl-small>26.10</small><strong data-dl-tile>09</strong></span>
+              <span class="label"><b>Download Nightly</b><span data-dl-sub>Built 9 October 2026, 20:35 UTC</span></span>
+            </a>
+          </div>
+          <p class="hero-meta" data-hero-meta data-reveal>Stable is planned for 26.10. Until then, Nightly is the newest build.</p>
+        </div>
+        <div class="hero-shot" data-reveal>
+          <img src="/plektra/assets/shots/stable/01-devices.webp?v=52ab0d4caf44" data-shot="01-devices" width="1320" height="996"
+               alt="Plektra on a Unihertz Titan 2, a Titan 2 Elite and a Pixel 7a, each suggesting “tomorrow” in a note" data-shot-version="52ab0d4caf44">
+        </div>
+      </div>
+
+      <section id="highlights" class="drawn">
+        <div class="rule"></div>
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="label-row"><span>01</span><span>Highlights</span></p>
+              <h2>Core features</h2>
+            </div>
+            <p>Configure physical keys, on-screen controls and text tools. Select a feature to see its device captures.</p>
+          </div>
+          <ol class="highlights" data-reveal-group>
+            <li data-reveal><a href="#keys"><span class="num">01</span><h3>Customizable Toolbar</h3><p>Suggestions, variations and menu buttons. Normal and Slim profiles, shared or stacked rows.</p></a></li>
+            <li data-reveal><a href="#keys"><span class="num">02</span><h3>Hardware Key Remapping</h3><p>Layouts, modifier indicators, SYM pages and Ctrl navigation for keyboard phones.</p></a></li>
+            <li data-reveal><a href="#text"><span class="num">03</span><h3>Smart Text Suggestions</h3><p>Word suggestions, character variations and long-press alternatives.</p></a></li>
+            <li data-reveal><a href="#text"><span class="num">04</span><h3>Snippets &amp; Clipboard</h3><p>Snippets from a short prefix, emoji and clipboard history.</p></a></li>
+            <li data-reveal><a href="#look"><span class="num">05</span><h3>Themes &amp; Layouts</h3><p>Nine bar themes, high contrast, and QWERTY, AZERTY or QWERTZ.</p></a></li>
+            <li data-reveal><a href="#look"><span class="num">06</span><h3>Software Keyboard Mode</h3><p>A software keyboard with the same suggestions, symbols and snippets.</p></a></li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="features" class="drawn">
+        <div class="rule"></div>
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="label-row"><span>02</span><span>Features</span></p>
+              <h2>Device showcase</h2>
+            </div>
+            <p>Real captures from a Titan 2, a Titan 2 Elite and a Pixel 7a. Select a picture to enlarge it.</p>
+          </div>
+          <nav class="chapter-nav" aria-label="Feature groups" data-reveal>
+            <a href="#keys">Keys and bar<span>6</span></a>
+            <a href="#text">Text and tools<span>10</span></a>
+            <a href="#look">Look and layout<span>4</span></a>
+          </nav>
+
+          <div class="chapter" id="keys">
+            <div class="chapter-title" data-reveal>
+              <h3>Keys and bar</h3>
+              <p>Configure the keyboard bar, modifier indicators and software key geometry.</p>
+            </div>
+            <div class="grid" data-reveal-group>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/02-keyboard-bar.webp?v=5afc2421e320" data-shot="02-keyboard-bar" width="1320" height="996" loading="lazy" alt="Titan 2 Elite with the keyboard bar showing suggestions and menu buttons" data-shot-version="5afc2421e320"></button>
+                <figcaption><h4>Modular toolbar configuration</h4><p>Configure suggestions, character variations and menu buttons independently.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/03-bar-configurations.webp?v=da94027ac4b0" data-shot="03-bar-configurations" width="1320" height="996" loading="lazy" alt="Four bar configurations: full bar, suggestions, LED strip and hidden" data-shot-version="da94027ac4b0"></button>
+                <figcaption><h4>Adjustable interface density</h4><p>Choose a full bar, compact controls, a modifier LED strip or a hidden bar.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/04-slim-profile.webp?v=dc7537a576d0" data-shot="04-slim-profile" width="1320" height="996" loading="lazy" alt="Normal and Slim keyboard bar profiles compared" data-shot-version="dc7537a576d0"></button>
+                <figcaption><h4>Dual profiles: Normal and Slim</h4><p>Configure Normal and Slim independently, then switch between the two profiles.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/05-shared-row.webp?v=615a6f9fb58e" data-shot="05-shared-row" width="1320" height="996" loading="lazy" alt="Stacked bar and shared row compared" data-shot-version="615a6f9fb58e"></button>
+                <figcaption><h4>Flexible toolbar layouts</h4><p>Place suggestions and actions in a shared row or arrange them in stacked rows.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/14-modifiers.webp?v=c669325c4ba9" data-shot="14-modifiers" width="1320" height="996" loading="lazy" alt="Keyboard bar showing an active and a locked modifier" data-shot-version="c669325c4ba9"></button>
+                <figcaption><h4>Live modifier state indicators</h4><p>See active and locked modifiers in the keyboard bar or Android status bar.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/20-key-arrangement.webp?v=7b0d78a9ca62" data-shot="20-key-arrangement" width="1320" height="996" loading="lazy" alt="Software keyboard with ortholinear and staggered key arrangements" data-shot-version="7b0d78a9ca62"></button>
+                <figcaption><h4>Ortholinear and staggered key geometries</h4><p>Choose ortholinear or staggered rows for the software keyboard.</p></figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="chapter" id="text">
+            <div class="chapter-title" data-reveal>
+              <h3>Text and tools</h3>
+              <p>Fewer keystrokes for the words, characters and text you use often.</p>
+            </div>
+            <div class="grid" data-reveal-group>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/06-suggestions.webp?v=7d770089504e" data-shot="06-suggestions" width="1320" height="996" loading="lazy" alt="Word suggestions for a partly typed word" data-shot-version="7d770089504e"></button>
+                <figcaption><h4>Predictive text and completions</h4><p>Complete words from suggestions as you type. Dictionaries and locally learned next words are supported.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/07-variations.webp?v=464a54945543" data-shot="07-variations" width="1320" height="996" loading="lazy" alt="Character variations for the last typed key in the bar" data-shot-version="464a54945543"></button>
+                <figcaption><h4>Contextual character variations</h4><p>Select accented letters and symbols from the variations for the current character.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/19-key-popup.webp?v=fb9c374abd46" data-shot="19-key-popup" width="1320" height="996" loading="lazy" alt="Long-press popup with alternate characters on the software keyboard" data-shot-version="fb9c374abd46"></button>
+                <figcaption><h4>Long-press secondary characters</h4><p>Long-press a software key to select its secondary characters.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/08-snippet-selection.webp?v=fca7f94e1740" data-shot="08-snippet-selection" width="1320" height="996" loading="lazy" alt="Saved snippets for an address, an email and a date" data-shot-version="fca7f94e1740"></button>
+                <figcaption><h4>Expandable text snippets &amp; templates</h4><p>Save reusable text such as addresses, email addresses and dates. Find snippets with a short prefix.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/09-snippet-result.webp?v=8b7a8cc4364f" data-shot="09-snippet-result" width="1320" height="996" loading="lazy" alt="A snippet shortcut before and after expansion" data-shot-version="8b7a8cc4364f"></button>
+                <figcaption><h4>Text shortcut expansion</h4><p>Expand a snippet shortcut into its saved text.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/10-symbols.webp?v=5984451cc886" data-shot="10-symbols" width="1320" height="996" loading="lazy" alt="SYM page with symbols mapped to the physical keys" data-shot-version="5984451cc886"></button>
+                <figcaption><h4>Direct SYM layer mapping</h4><p>Open SYM pages and enter symbols using the corresponding physical keys.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/11-emoji.webp?v=e0724a37cbfa" data-shot="11-emoji" width="1320" height="996" loading="lazy" alt="Emoji picker below a conversation" data-shot-version="e0724a37cbfa"></button>
+                <figcaption><h4>Integrated, low-profile emoji picker</h4><p>Browse and insert emoji from the keyboard.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/12-clipboard.webp?v=c4061de36fc1" data-shot="12-clipboard" width="1320" height="996" loading="lazy" alt="Clipboard history with copied entries" data-shot-version="c4061de36fc1"></button>
+                <figcaption><h4>Integrated clipboard manager</h4><p>Browse clipboard history and insert a saved entry.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/13-selection.webp?v=5d66c13967f4" data-shot="13-selection" width="1320" height="996" loading="lazy" alt="Text selected with keyboard controls" data-shot-version="5d66c13967f4"></button>
+                <figcaption><h4>Keyboard text selection</h4><p>Select text using physical keyboard controls.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/21-ctrl-navigation.webp?v=a1acb81e05c8" data-shot="21-ctrl-navigation" width="1320" height="996" loading="lazy" alt="Ctrl layer with navigation and editing actions on the keys" data-shot-version="a1acb81e05c8"></button>
+                <figcaption><h4>Terminal-style Ctrl navigation and selection</h4><p>Use Ctrl shortcuts to move the cursor, select text, copy and paste.</p></figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="chapter" id="look">
+            <div class="chapter-title" data-reveal>
+              <h3>Look and layout</h3>
+              <p>Interface themes, regional layouts and software keyboard mode.</p>
+            </div>
+            <div class="grid" data-reveal-group>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/15-hardware-themes.webp?v=2da25199390c" data-shot="15-hardware-themes" width="1320" height="996" loading="lazy" alt="Nine keyboard bar themes, from Plektra Dark to Transparent Dark" data-shot-version="2da25199390c"></button>
+                <figcaption><h4>Nine built-in interface themes</h4><p>Choose from nine built-in keyboard bar themes.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/16-software-keyboard.webp?v=3516acfd249b" data-shot="16-software-keyboard" width="1320" height="996" loading="lazy" alt="Software keyboard on a Pixel 7a in two themes" data-shot-version="3516acfd249b"></button>
+                <figcaption><h4>Standalone software keyboard mode</h4><p>Use the software keyboard on phones without physical keys, with suggestions, symbols and snippets.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/17-layouts.webp?v=0de84ca6a3f9" data-shot="17-layouts" width="1320" height="996" loading="lazy" alt="QWERTY, AZERTY and QWERTZ layouts" data-shot-version="0de84ca6a3f9"></button>
+                <figcaption><h4>Native QWERTY, AZERTY, and QWERTZ support</h4><p>Select QWERTY, AZERTY or QWERTZ, including German umlauts.</p></figcaption>
+              </figure>
+              <figure class="feature" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/18-high-contrast.webp?v=d9c594dfec5b" data-shot="18-high-contrast" width="1320" height="996" loading="lazy" alt="High-contrast theme on a Titan 2 Elite and a Pixel 7a" data-shot-version="d9c594dfec5b"></button>
+                <figcaption><h4>High-contrast mode for improved visibility</h4><p>Use a high-contrast theme with clear key outlines and distinct modifier indicators.</p></figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="download" class="drawn">
+        <div class="rule"></div>
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="label-row"><span>03</span><span>Download</span></p>
+              <h2>Download.</h2>
+            </div>
+            <p>Stable is the release for everyday use. Nightly gets new features first and can contain bugs. Version numbers are dates: 26.10 is October 2026, and a Nightly adds the day and the UTC build time.</p>
+          </div>
+
+          <div class="channels" data-reveal-group>
+            <article class="channel theme-stable" data-release="stable" data-reveal>
+              <header>
+                <img src="/plektra/assets/logo-stable.svg" alt="" width="48" height="48">
+                <h3>Plektra</h3>
+              </header>
+              <p class="desc">The stable release. New versions follow the calendar, starting with 26.10.</p>
+              <p class="calver" data-calver><span class="ym">26.10</span></p>
+              <p class="calver-date" data-calver-date>Planned for <strong>October 2026</strong></p>
+              <p class="planned" data-when-missing>No stable release is published yet.</p>
+              <div data-when-available hidden>
+                <a class="btn primary" href="/plektra/download/stable/">Download APK</a>
+                <div class="links">
+                  <a href="/plektra/download/stable/?variant=no-accessibility">APK without accessibility service</a>
+                  <a href="/plektra/download/stable/?to=notes">Release notes</a>
+                  <a href="/plektra/download/stable/?to=checksums">SHA256SUMS</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="channel theme-nightly" data-release="nightly" data-reveal>
+              <header>
+                <img src="/plektra/assets/logo-nightly.svg" alt="" width="48" height="48">
+                <h3>Plektra Nightly</h3>
+              </header>
+              <p class="desc">Development builds with the newest features. Expect bugs and incomplete features now and then.</p>
+              <p class="planned" data-when-missing hidden>No Nightly is published right now.</p>
+              <p class="calver" data-calver><span class="ym">26.10</span><span class="rest">-nightly.<b>09</b>.203552Z</span></p>
+              <p class="calver-date" data-calver-date>Built <strong>9 October 2026</strong>, 20:35 UTC</p>
+              <div data-when-available>
+                <a class="btn primary" href="/plektra/download/nightly/">Download APK</a>
+                <div class="links">
+                  <a href="/plektra/download/nightly/?variant=no-accessibility">APK without accessibility service</a>
+                  <a href="/plektra/download/nightly/?to=notes">Release notes</a>
+                  <a href="/plektra/download/nightly/?to=checksums">SHA256SUMS</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="distribution" aria-label="App stores and updates" data-reveal>
+            <a href="https://pkb.rocks/fdroid/nightly/repo">
+              <img class="fdroid" src="/plektra/assets/distribution/fdroid.svg" alt="" width="90" height="36">
+              <span><strong>F-Droid Nightly</strong><small>Our repository<br>Available soon</small></span>
+            </a>
+            <a href="https://f-droid.org/packages/rocks.pkb.plektra/">
+              <img class="fdroid" src="/plektra/assets/distribution/fdroid.svg" alt="" width="90" height="36">
+              <span><strong>F-Droid</strong><small>Main repository<br>Available soon</small></span>
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=rocks.pkb.plektra.unsovereign">
+              <img src="/plektra/assets/distribution/google-play.png" alt="" width="36" height="36">
+              <span><strong>Google Play</strong><small>Available soon</small></span>
+            </a>
+            <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22rocks.pkb.plektra.nightly%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Fpkb-rocks%2Fplektra%2Freleases%22%2C%22author%22%3A%22pkb-rocks%22%2C%22name%22%3A%22Plektra%20Nightly%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22filterReleaseTitlesByRegEx%5C%22%3A%5C%22nightly%5C%22%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22-full%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D">
+              <img src="/plektra/assets/distribution/obtainium.svg" alt="" width="36" height="36">
+              <span><strong>Add to Obtainium</strong><small>Nightly updates from GitHub releases</small></span>
+            </a>
+          </div>
+
+          <p class="variant-note" data-reveal>The full APK includes the Clicks accessibility service for launcher-button remapping. The APK without it keeps every other keyboard feature, including TalkBack support. Both variants are the same app and replace each other. <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/getting-started.md">Installation guide</a> and <a href="https://github.com/pkb-rocks/plektra/releases">all releases</a>.</p>
+
+          <div class="both" data-reveal>
+            <div>
+              <h3>Install both. Switch any time.</h3>
+              <p>Stable and Nightly are separate apps with their own app IDs, so both fit on the same phone. Pick the active keyboard in Android’s keyboard settings. Each app keeps its own settings.</p>
+            </div>
+            <div class="both-cases">
+              <div class="from-nightly">
+                <h4>Using Nightly?</h4>
+                <p>If a build gets in your way, switch to Stable and keep typing. Come back with the next Nightly.</p>
+              </div>
+              <div class="from-stable">
+                <h4>Using Stable?</h4>
+                <p>Switch to Nightly to try new features early. Stable stays installed as your fallback.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="release-statistics" aria-labelledby="statistics-heading" data-reveal>
+            <h3 id="statistics-heading">Release download statistics</h3>
+            <p>APK downloads after 24 and 72 hours, compared per release. Downloads across APK variants are combined.</p>
+            <p id="statistics-status" role="status">Loading release statistics…</p>
+            <div id="statistics-results" class="statistics-results" hidden></div>
+            <p>Downloads do not identify unique users or installations. Missing measurements are shown as gaps.</p>
+            <p><a href="https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/release-stats.json">Download data as JSON</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="devices" class="drawn">
+        <div class="rule"></div>
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="label-row"><span>04</span><span>Devices</span></p>
+              <h2>Physical and software keyboards.</h2>
+            </div>
+            <p>A selection of devices tested directly or supported by the community. Plektra supports built-in physical keyboards, Clicks keyboards and standalone touch input.</p>
+          </div>
+          <div class="devices" data-reveal-group>
+            <div data-reveal><h3>Titan 2</h3><p>Release-tested. Device-specific keyboard layouts and display geometry.</p></div>
+            <div data-reveal><h3>Titan 2 Elite</h3><p>Release-tested. Device-specific keyboard layouts and display geometry.</p></div>
+            <div data-reveal><h3>Pixel 7a + Clicks</h3><p>Directly tested with the Clicks Power Keyboard: the “Clicksel” combination.</p></div>
+            <div data-reveal><h3>Galaxy Z Fold6</h3><p>Directly tested for software keyboard use and folding behaviour, with Clicks Power Keyboard support. Further foldable improvements are planned.</p></div>
+          </div>
+          <p class="devices-note">Community-supported devices include the BlackBerry KEY2, Minimal Phone MP01 and BlackBerry Q25 (Zinwa mod), alongside other Clicks keyboard models. See the <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/devices.md">device support ranking</a>.</p>
+        </div>
+      </section>
+
+      <section id="build" class="drawn">
+        <div class="rule"></div>
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="label-row"><span>05</span><span>Build</span></p>
+              <h2>Build it yourself.</h2>
+            </div>
+            <p>Plektra is free software under the GNU General Public License v3.0. You need JDK 17 and the Android SDK for compile SDK 36.</p>
+          </div>
+          <pre class="terminal" data-reveal><button class="copy" type="button" data-copy>Copy</button><code><span class="prompt">$ </span>git clone https://github.com/pkb-rocks/plektra.git
+<span class="prompt">$ </span>cd plektra
+<span class="prompt">$ </span>scripts/build-nightly-debug.sh 26.10</code></pre>
+          <p class="build-note">Project structure and checks are in the <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/development.md">development guide</a>. Distributed forks must use their own name, application ID and update endpoints.</p>
+
+          <div class="star-history" aria-labelledby="stars-heading" data-reveal>
+            <h3 id="stars-heading">GitHub star history</h3>
+            <p>Stars over time for <a href="https://github.com/pkb-rocks/plektra/stargazers">pkb-rocks/plektra</a>.</p>
+            <picture>
+              <img src="/plektra/assets/star-history.svg" width="720" height="400" loading="lazy" alt="Plektra GitHub stars over time" data-star-history>
+            </picture>
+            <p data-star-status role="status">Loading the latest star history…</p>
+          </div>
+        </div>
       </section>
     </main>
+
+    <footer>
+      <div class="wrap">
+        <p>Moving from Pastiera? Import your Pastiera backup ZIP in Plektra’s Advanced settings. See the <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/migration-from-pastiera.md">migration guide</a>.</p>
+        <ul>
+          <li><a href="https://github.com/pkb-rocks/plektra">GitHub</a></li>
+          <li><a href="https://github.com/pkb-rocks/plektra/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://opencollective.com/plektra">Open Collective</a></li>
+          <li><a href="https://pzauner.de/Notes/.hidden/Impressum.pdf">Imprint</a></li>
+          <li><a href="/">PKB.rocks</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <dialog data-viewer aria-label="Screenshot">
+      <img alt="" data-viewer-img>
+      <div class="bar">
+        <p data-viewer-title></p>
+        <button type="button" data-viewer-step="-1">Previous</button>
+        <button type="button" data-viewer-step="1">Next</button>
+        <button type="button" data-viewer-close>Close</button>
+      </div>
+    </dialog>
+
     <script type="module" src="/release-statistics.mjs"></script>
+    <script type="module" src="/plektra/assets/star-history.js"></script>
+    <script type="module">
+      import { findAsset, formatDate, latestRelease, versionOf } from "/plektra/assets/releases.js";
+
+      const root = document.documentElement;
+      const shots = [...document.querySelectorAll("img[data-shot]")];
+      const shotSrc = (img, channel) => `/plektra/assets/shots/${channel}/${img.dataset.shot}.webp${img.dataset.shotVersion ? `?v=${img.dataset.shotVersion}` : ""}`;
+      const state = { stable: undefined, nightly: undefined };
+
+      // CalVer: YY.MM[.N] for Stable, YY.MM-nightly.DD.HHmmssZ for Nightly (UTC build time).
+      function parseCalver(version) {
+        const m = version.match(/^(\d{2})\.(\d{2})(?:\.(\d+))?(?:-nightly\.(\d{2})\.(\d{2})(\d{2})(\d{2})Z)?$/);
+        if (!m) return null;
+        const [, yy, mm, patch, dd, hh, min, ss] = m;
+        const month = new Intl.DateTimeFormat("en-GB", { month: "long", timeZone: "UTC" })
+          .format(new Date(Date.UTC(2000 + Number(yy), Number(mm) - 1, 1)));
+        return { base: `${yy}.${mm}`, patch, dd, hh, min, ss, year: 2000 + Number(yy), month, nightly: Boolean(dd) };
+      }
+
+      function renderButtons() {
+        const stableButton = document.querySelector('[data-dl="stable"]');
+        const nightlyButton = document.querySelector('[data-dl="nightly"]');
+        const meta = document.querySelector("[data-hero-meta]");
+        const stable = state.stable && parseCalver(versionOf(state.stable));
+        const nightly = state.nightly && parseCalver(versionOf(state.nightly));
+        if (stable) {
+          stableButton.classList.remove("pending");
+          stableButton.removeAttribute("aria-disabled");
+          stableButton.removeAttribute("role");
+          stableButton.href = "/plektra/download/stable/";
+          stableButton.querySelector("[data-dl-tile]").textContent = stable.patch ? `${stable.base}.${stable.patch}` : stable.base;
+          stableButton.querySelector("[data-dl-sub]").textContent = `Released ${formatDate(state.stable.published_at)}`;
+        }
+        if (nightly) {
+          nightlyButton.querySelector("[data-dl-small]").textContent = nightly.base;
+          nightlyButton.querySelector("[data-dl-tile]").textContent = nightly.dd;
+          nightlyButton.querySelector("[data-dl-sub]").textContent = `Built ${Number(nightly.dd)} ${nightly.month} ${nightly.year}, ${nightly.hh}:${nightly.min} UTC`;
+        }
+        if (stable) meta.textContent = `Stable ${stable.base} is the release for everyday use. Nightly gets new features first.`;
+        else if (state.stable === null) meta.textContent = "Stable is planned for 26.10. Until then, Nightly is the newest build.";
+      }
+
+      function renderCard(channel, release) {
+        const card = document.querySelector(`[data-release="${channel}"]`);
+        card.querySelector("[data-when-missing]").hidden = Boolean(release);
+        card.querySelector("[data-when-available]").hidden = !release;
+        if (!release) return;
+        const version = parseCalver(versionOf(release));
+        const calver = card.querySelector("[data-calver]");
+        const date = card.querySelector("[data-calver-date]");
+        if (version?.nightly) {
+          calver.innerHTML = `<span class="ym">${version.base}</span><span class="rest">-nightly.<b>${version.dd}</b>.${version.hh}${version.min}${version.ss}Z</span>`;
+          date.innerHTML = `Built <strong>${Number(version.dd)} ${version.month} ${version.year}</strong>, ${version.hh}:${version.min} UTC`;
+        } else if (version) {
+          calver.innerHTML = `<span class="ym">${version.base}</span>${version.patch ? `<span class="rest">.<b>${version.patch}</b></span>` : ""}`;
+          date.innerHTML = `<strong>${version.month} ${version.year}</strong>, released ${formatDate(release.published_at)}`;
+        }
+        card.querySelector('[href$="variant=no-accessibility"]').hidden = !findAsset(release, "no-accessibility");
+      }
+
+      function applyChannel(channel, save) {
+        root.dataset.channel = channel;
+        if (save) {
+          try { localStorage.setItem("plektra-channel", channel); } catch {}
+        }
+        for (const button of document.querySelectorAll("[data-set-channel]")) {
+          button.setAttribute("aria-pressed", String(button.dataset.setChannel === channel));
+        }
+        const logo = `/plektra/assets/logo-${channel}.svg`;
+        document.querySelector("[data-logo]").src = logo;
+        document.querySelector("[data-favicon]").href = logo;
+        document.querySelector("[data-channel-name]").textContent = channel === "nightly" ? "Plektra Nightly" : "Plektra";
+        for (const img of shots) img.src = shotSrc(img, channel);
+      }
+
+      for (const button of document.querySelectorAll("[data-set-channel]")) {
+        button.addEventListener("click", () => applyChannel(button.dataset.setChannel, true));
+      }
+      applyChannel(root.dataset.channel, false);
+
+      // Release data for the download cards.
+      for (const channel of ["stable", "nightly"]) {
+        latestRelease(channel).then((release) => {
+          state[channel] = release;
+          renderCard(channel, release);
+          renderButtons();
+        }).catch(() => {});
+      }
+
+      // Scroll reveal: once per element; items in a group start later the further right they sit.
+      if (root.classList.contains("reveal-on")) {
+        window.plektraReveal = true;
+        for (const group of document.querySelectorAll("[data-reveal-group]")) {
+          const box = group.getBoundingClientRect();
+          const items = [...group.querySelectorAll("[data-reveal]")];
+          items.forEach((item, index) => {
+            const delay = group.hasAttribute("data-stagger")
+              ? index * 0.08
+              : box.width > 0 ? ((item.getBoundingClientRect().left - box.left) / box.width) * 0.18 : 0;
+            item.style.setProperty("--delay", `${delay.toFixed(3)}s`);
+          });
+        }
+        const revealer = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add("is-in");
+            revealer.unobserve(entry.target);
+          }
+        }, { rootMargin: "0px 0px -12% 0px" });
+        for (const el of document.querySelectorAll("[data-reveal], .rule")) revealer.observe(el);
+      }
+
+      import("/plektra/assets/contents.js");
+
+      // Screenshot viewer.
+      const viewer = document.querySelector("[data-viewer]");
+      const viewerImg = document.querySelector("[data-viewer-img]");
+      const viewerTitle = document.querySelector("[data-viewer-title]");
+      const gallery = shots.filter((img) => img.closest(".feature"));
+      let current = 0;
+
+      function show(index) {
+        current = (index + gallery.length) % gallery.length;
+        const img = gallery[current];
+        viewerImg.src = img.src;
+        viewerImg.alt = img.alt;
+        viewerTitle.textContent = img.closest(".feature").querySelector("h4").textContent;
+      }
+      gallery.forEach((img, index) => {
+        img.closest("button").addEventListener("click", () => { show(index); viewer.showModal(); });
+      });
+      for (const button of document.querySelectorAll("[data-viewer-step]")) {
+        button.addEventListener("click", () => show(current + Number(button.dataset.viewerStep)));
+      }
+      document.querySelector("[data-viewer-close]").addEventListener("click", () => viewer.close());
+      viewer.addEventListener("click", (event) => { if (event.target === viewer) viewer.close(); });
+      viewer.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") show(current + 1);
+        if (event.key === "ArrowLeft") show(current - 1);
+      });
+
+      // Copy build commands.
+      document.querySelector("[data-copy]").addEventListener("click", async (event) => {
+        const text = "git clone https://github.com/pkb-rocks/plektra.git\ncd plektra\n./gradlew :app:assembleNightlyDebug";
+        try {
+          await navigator.clipboard.writeText(text);
+          event.target.textContent = "Copied";
+          setTimeout(() => { event.target.textContent = "Copy"; }, 1600);
+        } catch {}
+      });
+    </script>
   </body>
 </html>

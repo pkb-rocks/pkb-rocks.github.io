@@ -1,7 +1,7 @@
 const base = 'https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/';
 const image = document.querySelector('[data-star-history]');
 const status = document.querySelector('[data-star-status]');
-let source = 'assets/';
+let source = '/plektra/assets/';
 let updatedAt;
 
 function renderTheme() {
@@ -18,14 +18,14 @@ function renderStatus(data, fallback = false) {
 new MutationObserver(renderTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-channel'] });
 renderTheme();
 image.addEventListener('error', () => {
-  if (source === 'assets/') return;
-  source = 'assets/';
+  if (source === '/plektra/assets/') return;
+  source = '/plektra/assets/';
   loadFallback();
 });
 
 async function loadFallback() {
   try {
-    const response = await fetch('assets/star-history.json');
+    const response = await fetch('/plektra/assets/star-history.json');
     if (!response.ok) throw new Error('No saved star history');
     renderStatus(await response.json(), true);
   } catch {

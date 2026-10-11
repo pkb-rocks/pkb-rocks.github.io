@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds the web assets for /plektra/ from the Plektra showcase.
+// Builds the web assets for the Plektra home page from the Plektra showcase.
 //
 // Source: the rendered slide SVGs in the Plektra repository
 // (docs/showcase/exports/stable/landscape/*.svg, created by `npm run render`).
@@ -75,7 +75,7 @@ for (const theme of Object.keys(THEMES)) {
 }
 
 // Use image content versions so previews request regenerated screenshots.
-const pagePath = join(pagesRoot, "plektra/index.html");
+const pagePath = join(pagesRoot, "index.html");
 const page = readFileSync(pagePath, "utf8").replace(/<img\b[^>]*data-shot="([^"]+)"[^>]*>/g, (tag, id) => {
   const hash = createHash("sha256");
   for (const theme of Object.keys(THEMES)) hash.update(readFileSync(join(outDir, "shots", theme, `${id}.webp`)));

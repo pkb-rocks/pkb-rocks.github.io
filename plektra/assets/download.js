@@ -21,7 +21,7 @@ try {
   if (!release) {
     status.textContent = `No ${CHANNELS[channel].name} release is published yet.`;
     fallback.textContent = "Back to the Plektra downloads";
-    fallback.href = "/plektra/#download";
+    fallback.href = "/#download";
   } else if (target === "notes") {
     go(release.html_url);
   } else if (target === "checksums") {

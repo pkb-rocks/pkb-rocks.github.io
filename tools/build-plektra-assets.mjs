@@ -4,7 +4,7 @@
 // Source: the rendered slide SVGs in the Plektra repository
 // (docs/showcase/exports/stable/landscape/*.svg, created by `npm run render`).
 // Each slide is reduced to its visual area: headline, body copy, brand row and
-// footer are removed, the background becomes transparent, and the remaining
+// footer are removed, transparent visuals retain native alpha, and the remaining
 // labels are recoloured per page theme. The page sets its own text in HTML.
 //
 // Usage: node tools/build-plektra-assets.mjs [path-to-plektra-repo]
@@ -43,20 +43,19 @@ function isVisual(tag, a) {
   return Number(a.x) >= 700 && Number(a.y) <= 980;
 }
 
-function visualSvg(svg, theme) {
+function visualSvg(svg, theme, id) {
   let body = svg
     .replace(/^<svg[^>]*>/, "")
     .replace(/<\/svg>\s*$/, "")
     .replace(/<(rect|image)\b([^>]*)\/>/g, (whole, tag, a) => (isVisual(tag, attrs(a)) ? whole : ""))
     .replace(/<text\b([^>]*)>[^<]*<\/text>/g, (whole, a) => (isVisual("text", attrs(a)) ? whole : ""));
-  for (const colour of LABEL_COLOURS) body = body.replaceAll(`fill="${colour}"`, `fill="${THEMES[theme].label}"`);
-  // Native dark LED strokes need a light surface after their capture background is removed.
-  if (theme === "nightly") {
-    body = body.replace(/(<text\b[^>]*>LED strip<\/text>)(<image\b([^>]*)\/>)/, (_, label, image, source) => {
-      const a = attrs(source);
-      return `${label}<rect x="${a.x}" y="${a.y}" width="${a.width}" height="${a.height}" fill="#CFDDE7"/>${image}`;
-    });
-  }
+  const lightBarComparison = theme === "nightly" && [
+    "02-keyboard-bar", "03-bar-configurations", "04-slim-profile", "05-shared-row",
+    "06-suggestions", "07-variations", "10-symbols", "14-modifiers", "15-hardware-themes", "18-high-contrast",
+  ].includes(id);
+  const label = lightBarComparison ? THEMES.stable.label : THEMES[theme].label;
+  for (const colour of LABEL_COLOURS) body = body.replaceAll(`fill="${colour}"`, `fill="${label}"`);
+  if (lightBarComparison) body = `<rect x="${VIEW.x}" y="${VIEW.y}" width="${VIEW.width}" height="${VIEW.height}" fill="#CFDDE7"/>${body}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${VIEW.width}" height="${VIEW.height}" viewBox="${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}">${body}</svg>`;
 }
 
@@ -74,7 +73,7 @@ for (const theme of Object.keys(THEMES)) {
     const id = file.replace(/\.svg$/, "");
     const svgPath = join(work, `${theme}-${id}.svg`);
     const pngPath = join(work, `${theme}-${id}.png`);
-    writeFileSync(svgPath, visualSvg(readFileSync(join(slidesDir, file), "utf8"), theme));
+    writeFileSync(svgPath, visualSvg(readFileSync(join(slidesDir, file), "utf8"), theme, id));
     execFileSync("rsvg-convert", ["-w", String(RENDER_WIDTH), "-o", pngPath, svgPath]);
     execFileSync("cwebp", ["-quiet", "-q", WEBP_QUALITY, "-alpha_q", "90", pngPath, "-o", join(target, `${id}.webp`)]);
   }

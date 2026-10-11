@@ -48,3 +48,5 @@ The hourly statistics workflow updates the public `stats` branch independently
 of website builds; the Plektra repository README embeds its star charts directly.
 
 The asset builder also refreshes screenshot content versions in `index.html`, so browser previews request new images after a rebuild.
+
+Keyboard-bar images use native transparent Debug exports when available. This retains both LED rails and their spacing without screenshot background subtraction. Bar comparison images share a light backing in the Nightly page theme so inactive LEDs remain visible. Software keyboard themes are shown vertically; slide text wraps within its own column.

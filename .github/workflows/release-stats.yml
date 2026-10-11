@@ -21,7 +21,7 @@ jobs:
 
       - name: Test collector
         run: |
-          python3 -m unittest discover -s scripts/tests -p 'test_release_stats.py'
+          python3 -m unittest discover -s scripts/tests -p 'test_*stats.py'
           node scripts/tests/test-release-statistics.mjs
 
       - name: Open statistics branch in an isolated worktree
@@ -52,16 +52,21 @@ jobs:
             --output "$STATS_DIR/release-stats.json" \
             --charts-dir "$STATS_DIR"
 
+      - name: Collect public star history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/collect-star-history.py --output-dir "$STATS_DIR"
+
       - name: Save changed statistics
         shell: bash
         run: |
           set -euo pipefail
-          git -C "$STATS_DIR" add release-stats.json nightly-downloads.svg stable-downloads.svg
+          git -C "$STATS_DIR" add release-stats.json nightly-downloads.svg stable-downloads.svg star-history.json star-history.svg star-history-dark.svg
           if git -C "$STATS_DIR" diff --cached --quiet; then
-            echo "No new snapshots or releases."
+            echo "No new download measurements or star history."
             exit 0
           fi
           git -C "$STATS_DIR" config user.name "github-actions[bot]"
           git -C "$STATS_DIR" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C "$STATS_DIR" commit -m "Update release download snapshots"
+          git -C "$STATS_DIR" commit -m "Update download snapshots and star history"
           git -C "$STATS_DIR" push origin HEAD:refs/heads/stats

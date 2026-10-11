@@ -14,6 +14,8 @@ export function renderStatistics(data, container) {
   for (const channel of ['nightly', 'stable']) {
     const releases = data.releases.filter(release => release.channel === channel).slice(-12);
     if (!releases.length) continue;
+    const group = document.createElement('div');
+    group.className = 'statistics-channel';
     const heading = document.createElement('h3');
     heading.textContent = channel === 'nightly' ? 'Nightly' : 'Stable';
     const image = document.createElement('img');
@@ -59,7 +61,12 @@ export function renderStatistics(data, container) {
     }
     table.append(body);
     wrapper.append(table);
-    container.append(heading, image, wrapper);
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = 'Release measurements';
+    details.append(summary, wrapper);
+    group.append(heading, image, details);
+    container.append(group);
   }
   container.hidden = false;
 }

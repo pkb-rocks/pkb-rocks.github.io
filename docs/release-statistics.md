@@ -89,3 +89,21 @@ token writes only this Pages repository. The public source API requires no
 additional cross-repository credentials. The existing branch-based Pages
 deployment remains in place. Only publication of website code rebuilds Pages;
 statistic updates are read from the public `stats` branch at page load.
+
+## GitHub stars
+
+`collect-star-history.py` reads GitHub's public daily star history and the current
+repository star count for `pkb-rocks/plektra`. The hourly workflow publishes
+`star-history.json`, `star-history.svg`, and `star-history-dark.svg` to the
+`stats` branch alongside the release statistics. The chart shows the cumulative
+daily history; the current star count appears separately because removed stars
+can make these values differ.
+
+The Plektra page reads these artifacts at page load and falls back to the last
+bundled snapshot when the live files are unavailable. The app README embeds the
+SVGs from the `stats` branch, so updates do not require editing its Markdown.
+
+```sh
+python3 scripts/collect-star-history.py --help
+python3 -m unittest discover -s scripts/tests -p 'test_*stats.py'
+```

@@ -1,0 +1,29 @@
+.toc .contents-label, .toc .contents-letter { font: inherit; margin: 0; }
+.contents-ruler { display: none; }
+@media (min-width: 1280px) and (hover: hover) and (pointer: fine) {
+  .wrap { width: min(1120px, calc(100% - 340px)); margin-left: max(24px, calc((100vw - 1450px)/2)); margin-right: 0; }
+  .toc { position: fixed; inset: 0 60px 0 auto; width: 270px; border: 0; z-index: 12; pointer-events: none; }
+  .toc .wrap { width: 100%; margin: 0; }
+  .toc ol { display: block; overflow: visible; }
+  .toc li { position: absolute; right: 0; top: 0; margin: 0 !important; }
+  .toc a { display: block; padding: 3px 0 3px 12px; text-transform: uppercase; font: 650 13px/1.15 var(--sans); letter-spacing: .015em; color: var(--muted); pointer-events: auto; text-align: right; text-shadow: 0 0 5px var(--bg), 0 0 10px var(--bg); }
+  .toc .sub a { font-size: 13px; }
+  .toc a span { margin: 0; font: inherit; }
+  .toc a .contents-number { display: none; }
+  .toc a .contents-letter { display: inline-block; white-space: pre; transition: color .2s ease; }
+  .toc a[aria-current="true"] { color: var(--text); font-size: 27px; }
+  .toc a[aria-current="true"]::after { display: none; }
+  .toc a[aria-current="true"] .contents-letter { color: var(--text); }
+  .toc a:hover .contents-letter { color: var(--accent-text); }
+  .toc-progress { display: none; }
+  .contents-ruler { display: block; position: fixed; inset: 68px 0 0 auto; width: 48px; z-index: 11; color: var(--muted); cursor: crosshair; overflow: hidden; background: linear-gradient(90deg, transparent, var(--bg) 70%); touch-action: none; }
+  .contents-ruler .tick { position: absolute; right: 0; width: 9px; height: 1px; background: var(--line); }
+  .contents-ruler .tick.major { width: 17px; background: var(--muted); }
+  .contents-ruler .tick-label { position: absolute; right: 22px; top: -5px; font: 9px/1 var(--mono); }
+  .contents-ruler .needle { position: absolute; right: 0; width: 48px; height: 1px; background: var(--accent); }
+  .contents-ruler output { position: absolute; right: 2px; top: 5px; color: var(--accent-text); font: 9px/1 var(--mono); }
+  section, .chapter { scroll-margin-top: 88px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toc a .contents-letter { transition: none; }
+}

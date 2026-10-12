@@ -71,7 +71,20 @@
             }
           ]
         },
-        "72h": null
+        "72h": {
+          "due_at": "2026-10-11T21:22:45Z",
+          "captured_at": "2026-10-12T00:36:06Z",
+          "status": "late",
+          "issues": [],
+          "assets": [
+            {
+              "asset_id": 623044335,
+              "name": "Plektra-26.10-nightly.08.211000Z-full.apk",
+              "created_at": "2026-10-08T21:22:15Z",
+              "download_count": 188
+            }
+          ]
+        }
       }
     },
     {

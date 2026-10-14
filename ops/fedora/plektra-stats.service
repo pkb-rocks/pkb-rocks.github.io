@@ -1,0 +1,12 @@
+[Unit]
+Description=Collect and publish Plektra statistics
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/gits/GitHub/pkb-rocks.github.io
+ExecStart=/usr/bin/python3 %h/gits/GitHub/pkb-rocks.github.io/scripts/run-release-stats.py
+Environment=GIT_TERMINAL_PROMPT=0
+UMask=0077
+TimeoutStartSec=180

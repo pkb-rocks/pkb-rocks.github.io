@@ -75,6 +75,7 @@ def update(state, releases, observed_at):
                 "snapshots": {"24h": None, "72h": None},
             }
             records[release["id"]] = record
+        record["current"] = {"captured_at": iso(observed_at), "assets": deepcopy(assets)}
         if all(record["snapshots"].values()):
             continue
         if [a["asset_id"] for a in assets] != record["initial_asset_ids"]:
@@ -103,19 +104,29 @@ def update(state, releases, observed_at):
                 "issues": reasons, "assets": deepcopy(assets),
             }
     state["releases"] = sorted(records.values(), key=lambda r: (r["published_at"], r["release_id"]))
+    active = {r["id"] for r in releases if not r["draft"] and r["published_at"]}
+    due = [timestamp(r["published_at"]) + timedelta(hours=h)
+           for r in state["releases"] if r["release_id"] in active
+           for h in WINDOWS if r["snapshots"][f"{h}h"] is None]
+    state["last_checked_at"] = iso(observed_at)
+    state["next_measurement_at"] = iso(min(due)) if due else None
+    planned = min(due + [observed_at.replace(second=0, microsecond=0) + timedelta(minutes=5)])
+    tick = planned.replace(second=0, microsecond=0)
+    if tick < planned:
+        tick += timedelta(minutes=1)
+    state["next_collection_at"] = iso(tick)
     return state
 
 
 def collect(repository, state):
     releases = pages(f"/repos/{repository}/releases")
-    known = {r["release_id"]: r for r in state["releases"]}
     for release in releases:
         if release["draft"] or not release["published_at"]:
             continue
-        record = known.get(release["id"])
-        if record and all(record["snapshots"].values()):
-            continue
-        release["assets"] = pages(f"/repos/{repository}/releases/{release['id']}/assets")
+        # The release response includes its assets; use the paginated endpoint
+        # for large collections to keep unattended public API usage small.
+        if len(release["assets"]) >= 30:
+            release["assets"] = pages(f"/repos/{repository}/releases/{release['id']}/assets")
     return update(state, releases, datetime.now(UTC))
 
 
@@ -130,7 +141,10 @@ def chart(state, channel):
     width, height = 720, 400
     left, right, top, bottom = 54, 700, 88, 292
     values = [(total(r["snapshots"]["24h"]), total(r["snapshots"]["72h"])) for r in records]
-    maximum = max([v for pair in values for v in pair if v is not None] + [1])
+    late_values = [sum(a["download_count"] for a in snap["assets"])
+                   for r in records for snap in r["snapshots"].values()
+                   if snap and snap["status"] == "late" and not snap["issues"]]
+    maximum = max([v for pair in values for v in pair if v is not None] + late_values + [1])
     maximum = max(50, ((maximum + 49) // 50) * 50)
     def y(value):
         return bottom - value / maximum * (bottom - top)
@@ -139,7 +153,6 @@ def chart(state, channel):
              '<desc id="desc">Snapshots after 24 and 72 hours. The upper segment contains additional downloads between those times. Missing measurements are not zero.</desc>',
              '<rect width="720" height="400" fill="#0a0f14"/>',
              '<g font-family="system-ui,sans-serif" fill="#edf8fa">',
-             f'<text x="18" y="29" font-size="20">{channel.title()} APK downloads</text>',
              '<rect x="18" y="46" width="13" height="13" fill="#72e6ec"/><text x="39" y="58" font-size="13">Up to 24 h</text>',
              '<rect x="180" y="46" width="13" height="13" fill="#3c7b77"/><text x="201" y="58" font-size="13">Additional downloads up to 72 h</text>']
     for i in range(5):
@@ -164,10 +177,16 @@ def chart(state, channel):
             parts.append(f'<text x="{x:.1f}" y="{y(value)-8:.1f}" text-anchor="middle" font-size="13">{value}</text>')
         else:
             parts.append(f'<text x="{x:.1f}" y="{bottom-9}" text-anchor="middle" font-size="16">—</text>')
+        for offset, key in [(-9, "24h"), (9, "72h")]:
+            snapshot = record["snapshots"][key]
+            if snapshot and snapshot["status"] == "late" and not snapshot["issues"]:
+                count = sum(a["download_count"] for a in snapshot["assets"])
+                age = (timestamp(snapshot["captured_at"]) - timestamp(record["published_at"])).total_seconds() / 3600
+                parts.append(f'<circle cx="{x+offset:.1f}" cy="{y(count):.1f}" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>{count} downloads measured after {age:.1f} h ({escape(snapshot["captured_at"])})</title></circle>')
         parts.append('</g>')
-    if not any(v is not None for pair in values for v in pair):
+    if not late_values and not any(v is not None for pair in values for v in pair):
         parts.append('<text x="377" y="178" text-anchor="middle" font-size="16">Awaiting valid snapshots</text>')
-    parts.extend(['<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Outlined bars: 72 h total without a valid 24 h snapshot</text>', '</g></svg>'])
+    parts.extend(['<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Orange circles: late observations; see table for actual time</text>', '</g></svg>'])
     return '\n'.join(parts) + '\n'
 
 

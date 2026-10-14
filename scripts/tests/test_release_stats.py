@@ -45,7 +45,26 @@ class SnapshotTests(unittest.TestCase):
         self.assertEqual(first, snapshots["24h"])
         self.assertEqual([100, 150], [snapshots[k]["assets"][0]["download_count"] for k in ("24h", "72h")])
         self.assertEqual(1, len(snapshots["24h"]["assets"]))
-        self.assertEqual(state, self.capture(state, 100, release(900)))
+        updated = self.capture(state, 100, release(900))
+        self.assertEqual(state["releases"][0]["snapshots"], updated["releases"][0]["snapshots"])
+        self.assertEqual(900, updated["releases"][0]["current"]["assets"][0]["download_count"])
+        self.assertIsNone(updated["next_measurement_at"])
+
+    def test_next_deadline_and_current_counts_are_independent_of_fixed_snapshots(self):
+        state = self.capture(empty(), 23.9)
+        self.assertEqual(stats.iso(START + timedelta(hours=23, minutes=59)), state["next_collection_at"])
+        state = self.capture(state, 24, release(100))
+        self.assertEqual(stats.iso(START + timedelta(hours=72)), state["next_measurement_at"])
+        state = self.capture(state, 30, release(140))
+        self.assertEqual(100, state["releases"][0]["snapshots"]["24h"]["assets"][0]["download_count"])
+        self.assertEqual(140, state["releases"][0]["current"]["assets"][0]["download_count"])
+        self.assertEqual(stats.iso(START + timedelta(hours=30, minutes=5)), state["next_collection_at"])
+
+    def test_collector_reuses_embedded_assets_for_public_api_budget(self):
+        with patch.object(stats, "pages", return_value=[release(123)]) as api:
+            state = stats.collect("pkb-rocks/plektra", empty())
+        self.assertEqual(1, api.call_count)
+        self.assertEqual(123, state["releases"][0]["current"]["assets"][0]["download_count"])
 
     def test_tolerance_boundary_and_missed_history(self):
         self.assertEqual("captured", self.capture(empty(), 26)["releases"][0]["snapshots"]["24h"]["status"])
@@ -82,9 +101,11 @@ class SnapshotTests(unittest.TestCase):
     def test_drafts_excluded_and_removed_releases_retained(self):
         data = release()
         data["draft"] = True
-        self.assertEqual(empty(), self.capture(empty(), 24, data))
+        self.assertEqual([], self.capture(empty(), 24, data)["releases"])
         state = self.capture(empty(), 24)
-        self.assertEqual(state, stats.update(state, [], START + timedelta(hours=72)))
+        removed = stats.update(state, [], START + timedelta(hours=72))
+        self.assertEqual(state["releases"], removed["releases"])
+        self.assertIsNone(removed["next_measurement_at"])
 
     def test_changed_publication_time_is_invalid(self):
         state = self.capture(empty(), 2)
@@ -116,15 +137,14 @@ class PersistenceTests(unittest.TestCase):
         self.assertIn("page=2", api.call_args_list[1].args[0].full_url)
         self.assertEqual("Bearer test-token", api.call_args_list[0].args[0].get_header("Authorization"))
 
-    def test_cli_no_change_preserves_file_and_api_failure_preserves_state(self):
+    def test_cli_records_empty_check_and_api_failure_preserves_state(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "release-stats.json"
             output.write_text(json.dumps(empty(), ensure_ascii=False, indent=2) + "\n")
-            original = output.read_bytes()
-            modified = output.stat().st_mtime_ns
             with patch.object(stats.sys, "argv", ["collector", "--output", str(output)]), patch.object(stats, "pages", return_value=[]):
                 stats.main()
-            self.assertEqual(modified, output.stat().st_mtime_ns)
+            self.assertIn("last_checked_at", json.loads(output.read_text()))
+            original = output.read_bytes()
             with patch.object(stats.sys, "argv", ["collector", "--output", str(output)]), patch.object(stats, "pages", side_effect=OSError("API unavailable")):
                 with self.assertRaises(OSError):
                     stats.main()

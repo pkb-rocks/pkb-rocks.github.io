@@ -89,7 +89,9 @@
       .top > .wrap { display: flex; align-items: center; gap: 28px; min-height: 68px; width: calc(100% - 48px); margin-inline: 24px; }
       .brand { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 600; text-decoration: none; }
       .brand img { width: 44px; height: 44px; }
-      .gh-link { margin-left: auto; font-size: .95rem; color: var(--muted); text-decoration: none; }
+      .gh-link { font-size: .95rem; color: var(--muted); text-decoration: none; }
+      .support-link { margin-left: auto; flex-shrink: 0; }
+      .support-link img { width: 224px; height: auto; }
       .gh-link:hover { color: var(--text); }
 
       /* Table of contents: always visible below the header, marks the current section. */
@@ -199,16 +201,6 @@
       .section-head p { margin: 4px 0 0; max-width: 52ch; color: var(--muted); }
 
       /* Features */
-      .chapter-nav { display: flex; flex-wrap: wrap; gap: 10px; margin: -24px 0 56px; }
-      .chapter-nav a {
-        text-decoration: none;
-        padding: 8px 14px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        font-size: .95rem;
-      }
-      .chapter-nav a span { color: var(--muted); margin-left: 6px; }
-      .chapter-nav a:hover { border-color: var(--muted); }
       .chapter {
         display: grid;
         grid-template-columns: minmax(200px, .55fr) minmax(0, 2fr);
@@ -379,28 +371,9 @@
       .calver-date { margin: 0 0 26px; font-size: .98rem; color: var(--muted); }
       .calver-date strong { color: var(--text); font-weight: 600; }
 
-      /* Section labels and the highlights overview */
+      /* Section labels */
       .label-row { display: flex; gap: 10px; margin-bottom: 18px; font: 500 .85rem var(--mono); color: var(--muted); }
       .label-row span:first-child { color: var(--accent-text); }
-      .highlights {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1px;
-        background: var(--line);
-        border-top: 1px solid var(--line);
-        border-bottom: 1px solid var(--line);
-      }
-      .highlights li { background: var(--bg); transition: background-color .35s ease; }
-      .highlights a { display: block; height: 100%; padding: 30px 30px 34px 0; text-decoration: none; }
-      .highlights li:nth-child(3n+2) a, .highlights li:nth-child(3n) a { padding-left: 30px; }
-      .highlights .num { font: 500 .85rem var(--mono); color: var(--accent-text); }
-      .highlights h3 { margin: 14px 0 8px; font-size: 1.9rem; line-height: 1.05; }
-      .highlights p { margin: 0; color: var(--muted); font-size: .98rem; }
-      .highlights a:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
-
       /* Scroll reveal, modelled on the reference: fade, rise 28px and unblur once. */
       .reveal-on [data-reveal] {
         opacity: 0;
@@ -419,14 +392,7 @@
       section.drawn > .wrap { padding-top: 104px; }
       @media (max-width: 640px) { section.drawn > .wrap { padding-top: 76px; } }
 
-      @media (max-width: 960px) {
-        .highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .highlights li:nth-child(n) a { padding: 26px 22px 30px 0; }
-        .highlights li:nth-child(2n) a { padding-left: 22px; }
-      }
       @media (max-width: 640px) {
-        .highlights { grid-template-columns: 1fr; }
-        .highlights li:nth-child(n) a { padding: 24px 0 26px; }
         .dl { width: 100%; }
       }
 
@@ -436,9 +402,13 @@
         .channels { grid-template-columns: 1fr; }
       }
       @media (max-width: 640px) {
-        .top > .wrap { gap: 12px; flex-wrap: wrap; padding-block: 8px; width: calc(100% - 32px); margin-inline: 16px; }
-        .brand { font-size: 1.25rem; }
-        .brand img { width: 40px; height: 40px; }
+        .top > .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; padding-block: 10px; width: calc(100% - 32px); margin-inline: 16px; }
+        .brand { grid-column: 1; grid-row: 1; min-width: 0; font-size: 1.1rem; gap: 10px; }
+        .brand img { width: 36px; height: 36px; }
+        .gh-link { grid-column: 2; grid-row: 1; justify-self: end; margin: 0; }
+        .support-link { grid-column: 1; grid-row: 2; min-width: 0; margin: 0; }
+        .support-link img { width: 100%; max-width: 180px; }
+        .switch { grid-column: 2; grid-row: 2; }
         .grid, .both-cases, .devices { grid-template-columns: 1fr; }
         .devices div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 26px; }
         .channel { padding: 26px; }
@@ -451,12 +421,13 @@
       }
       .release-statistics { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
       .release-statistics > p, .star-history p { color: var(--muted); }
-      .statistics-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+      .statistics-results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
       .statistics-channel img, .star-history img { display: block; width: 100%; height: auto; }
+      .statistics-channel { min-width: 0; max-width: 840px; }
       .statistics-channel h3 { margin-bottom: 16px; }
       .statistics-channel summary { padding: 16px 0; cursor: pointer; }
       .table-scroll { overflow-x: auto; }
-      .table-scroll table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+      .table-scroll table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: .9rem; }
       .table-scroll caption { text-align: left; padding: 12px 0; color: var(--muted); }
       .table-scroll th, .table-scroll td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
       .table-scroll td:first-child { min-width: 180px; overflow-wrap: anywhere; }
@@ -473,6 +444,7 @@
           <img src="/plektra/assets/logo-stable.svg" alt="" width="44" height="44" data-logo>
           <span data-channel-name>Plektra</span>
         </a>
+        <a class="support-link" href="https://opencollective.com/plektra" aria-label="Support Plektra on Open Collective"><img src="/plektra/assets/opencollective-button.png" alt="Support Plektra on Open Collective" width="298" height="48"></a>
         <a class="gh-link" href="https://github.com/pkb-rocks/plektra">GitHub</a>
         <div class="switch" role="group" aria-label="Release channel">
           <button type="button" data-set-channel="stable" aria-pressed="true">Stable</button>
@@ -482,14 +454,13 @@
       <nav class="toc" aria-label="Contents">
         <div class="wrap">
           <ol>
-            <li><a href="#highlights"><span>01</span>Highlights</a></li>
-            <li><a href="#features"><span>02</span>Features</a></li>
+            <li><a href="#features"><span>01</span>Features</a></li>
             <li class="sub"><a href="#keys">Keys and bar</a></li>
             <li class="sub"><a href="#text">Text and tools</a></li>
             <li class="sub"><a href="#look">Look and layout</a></li>
-            <li><a href="#download"><span>03</span>Download</a></li>
-            <li><a href="#devices"><span>04</span>Devices</a></li>
-            <li><a href="#build"><span>05</span>Build</a></li>
+            <li><a href="#download"><span>02</span>Download</a></li>
+            <li><a href="#devices"><span>03</span>Devices</a></li>
+            <li><a href="#build"><span>04</span>Build</a></li>
           </ol>
         </div>
         <div class="toc-progress" data-toc-progress></div>
@@ -519,42 +490,16 @@
         </div>
       </div>
 
-      <section id="highlights" class="drawn">
-        <div class="rule"></div>
-        <div class="wrap">
-          <div class="section-head" data-reveal>
-            <div>
-              <p class="label-row"><span>01</span><span>Highlights</span></p>
-              <h2>Core features</h2>
-            </div>
-            <p>Configure physical keys, on-screen controls and text tools. Select a feature to see its device captures.</p>
-          </div>
-          <ol class="highlights" data-reveal-group>
-            <li data-reveal><a href="#keys"><span class="num">01</span><h3>Customizable Toolbar</h3><p>Suggestions, variations and menu buttons. Normal and Slim profiles, shared or stacked rows.</p></a></li>
-            <li data-reveal><a href="#keys"><span class="num">02</span><h3>Hardware Key Remapping</h3><p>Layouts, modifier indicators, SYM pages and Ctrl navigation for keyboard phones.</p></a></li>
-            <li data-reveal><a href="#text"><span class="num">03</span><h3>Smart Text Suggestions</h3><p>Word suggestions, character variations and long-press alternatives.</p></a></li>
-            <li data-reveal><a href="#text"><span class="num">04</span><h3>Snippets &amp; Clipboard</h3><p>Snippets from a short prefix, emoji and clipboard history.</p></a></li>
-            <li data-reveal><a href="#look"><span class="num">05</span><h3>Themes &amp; Layouts</h3><p>Nine bar themes, high contrast, and QWERTY, AZERTY or QWERTZ.</p></a></li>
-            <li data-reveal><a href="#look"><span class="num">06</span><h3>Software Keyboard Mode</h3><p>A software keyboard with the same suggestions, symbols and snippets.</p></a></li>
-          </ol>
-        </div>
-      </section>
-
       <section id="features" class="drawn">
         <div class="rule"></div>
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>02</span><span>Features</span></p>
+              <p class="label-row"><span>01</span><span>Features</span></p>
               <h2>Device showcase</h2>
             </div>
             <p>Real captures from a Titan 2, a Titan 2 Elite and a Pixel 7a. Select a picture to enlarge it.</p>
           </div>
-          <nav class="chapter-nav" aria-label="Feature groups" data-reveal>
-            <a href="#keys">Keys and bar<span>6</span></a>
-            <a href="#text">Text and tools<span>10</span></a>
-            <a href="#look">Look and layout<span>4</span></a>
-          </nav>
 
           <div class="chapter" id="keys">
             <div class="chapter-title" data-reveal>
@@ -628,7 +573,7 @@
                 <figcaption><h4>Integrated clipboard manager</h4><p>Browse clipboard history and insert a saved entry.</p></figcaption>
               </figure>
               <figure class="feature" data-reveal>
-                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/13-selection.webp?v=5d66c13967f4" data-shot="13-selection" width="1320" height="996" loading="lazy" alt="Text selected with keyboard controls" data-shot-version="5d66c13967f4"></button>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/13-selection.webp?v=ea1c82b010e5" data-shot="13-selection" width="1320" height="996" loading="lazy" alt="Text selected with keyboard controls" data-shot-version="ea1c82b010e5"></button>
                 <figcaption><h4>Keyboard text selection</h4><p>Select text using physical keyboard controls.</p></figcaption>
               </figure>
               <figure class="feature" data-reveal>
@@ -670,7 +615,7 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>03</span><span>Download</span></p>
+              <p class="label-row"><span>02</span><span>Download</span></p>
               <h2>Download.</h2>
             </div>
             <p>Stable is the release for everyday use. Nightly gets new features first and can contain bugs. Version numbers are dates: 26.10 is October 2026, and a Nightly adds the day and the UTC build time.</p>
@@ -756,7 +701,7 @@
 
           <div class="release-statistics" aria-labelledby="statistics-heading" data-reveal>
             <h3 id="statistics-heading">Release download statistics</h3>
-            <p>APK downloads after 24 and 72 hours, compared per release. Downloads across APK variants are combined.</p>
+            <p>Current APK download counts and fixed 24/72-hour comparisons per release. Late observations include their actual elapsed time; counts combine the available APK variants.</p>
             <p id="statistics-status" role="status">Loading release statistics…</p>
             <div id="statistics-results" class="statistics-results" hidden></div>
             <p>Downloads do not identify unique users or installations. Missing measurements are shown as gaps.</p>
@@ -770,7 +715,7 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>04</span><span>Devices</span></p>
+              <p class="label-row"><span>03</span><span>Devices</span></p>
               <h2>Physical and software keyboards.</h2>
             </div>
             <p>A selection of devices tested directly or supported by the community. Plektra supports built-in physical keyboards, Clicks keyboards and standalone touch input.</p>
@@ -790,7 +735,7 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>05</span><span>Build</span></p>
+              <p class="label-row"><span>04</span><span>Build</span></p>
               <h2>Build it yourself.</h2>
             </div>
             <p>Plektra is free software under the GNU General Public License v3.0. You need JDK 17 and the Android SDK for compile SDK 36.</p>
@@ -835,7 +780,7 @@
       </div>
     </dialog>
 
-    <script type="module" src="/release-statistics.mjs"></script>
+    <script type="module" src="/release-statistics.mjs?v=8bb9fccb41dd"></script>
     <script type="module" src="/plektra/assets/star-history.js?v=5a46d8a0ec81"></script>
     <script type="module">
       import { findAsset, formatDate, latestRelease, versionOf } from "/plektra/assets/releases.js";

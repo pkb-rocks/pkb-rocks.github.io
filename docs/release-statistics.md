@@ -1,109 +1,99 @@
 # Release download statistics
 
-The `Release download statistics` workflow collects two APK download snapshots per
-published release: 24 and 72 hours after `published_at`. It runs hourly at minute
-17 and can also be started manually. It does not build Android packages.
+Fedora collects public Plektra release data and publishes verified bot updates to this
+repository's `stats` branch. GitHub Actions tests the scripts; it does not publish
+statistics. The website reads the branch directly, so statistics updates need no
+Pages deployment.
 
-The collector uses Python 3's standard library and GitHub's REST API. The workflow
-uses a standard Ubuntu runner and the repository's `GITHUB_TOKEN` with
-`contents: write`. It writes `release-stats.json`, `nightly-downloads.svg`, and
-`stable-downloads.svg` on this Pages repository's `stats` branch,
-creating an orphan branch on the first successful run. It commits only changed
-data and pushes without force. Concurrent collector runs are serialized.
-Branch rules must permit the Actions token to update `stats`.
+## Measurements
 
-## Data contract
+Each published release has immutable `24h` and `72h` snapshots relative to its
+GitHub `published_at` time. APK variants remain separate in the data and are
+summed for the displayed download count. Checksums, SBOMs and source archives are
+excluded. Downloads do not identify unique users or installations.
 
-The JSON document has `schema_version: 1`, `repository`,
-`capture_tolerance_seconds: 7200`, and a chronological `releases` array.
-Each release includes its ID, tag, publication time, channel, prerelease flag,
-first observation, initially observed APK asset IDs, an asset-change flag,
-and `snapshots` with `24h` and `72h` entries.
+A snapshot contains `due_at`, `captured_at`, `status`, `issues` and `assets`.
+`captured` means the observation was within two hours of its target and had no
+asset continuity problems. `late` keeps the actual observed counter and time;
+`invalid` identifies changed assets, decreased counters or other continuity
+problems. Existing snapshots are never overwritten or backfilled with invented
+historical counts. Removed releases retain their existing records.
 
-Nightly tags (`nightly/` or `-nightly.`) determine the Nightly channel. Other tags
-are Stable; `prerelease` remains a separate field so other preview releases can
-be filtered explicitly.
+Each release also has `current`, with an observed APK asset list and
+`captured_at`. Current counts refresh on collection even after both fixed
+snapshots are complete. `last_checked_at` records the observation used by the
+published data. `next_collection_at` and `next_measurement_at` describe collection;
+`next_publication_at` identifies the next planned daily or fixed-measurement update. The website displays
+current totals, fixed snapshots and explicitly labelled late values. Orange
+circles in the chart identify late observations; the table gives their elapsed
+hours and its cell tooltip gives the exact timestamp.
 
-A snapshot is `null` until due. Once recorded it is immutable and contains:
+## Fedora collector
 
-- `due_at`: the target time relative to publication.
-- `captured_at`: the actual collection time, after the API requests complete.
-- `status`: `captured`, `late`, or `invalid`.
-- `issues`: observed changes to publication time, APK asset IDs, decreased
-  counters, or missing APKs.
-- `assets`: uploaded `.apk` assets, each with ID, name, creation time, and
-  cumulative `download_count`. Checksums, source archives, and SBOMs are excluded.
+See [installation and operation](../ops/fedora/README.md).
 
-`captured` means the observation was within two hours of its target without
-detected continuity problems. `late` retains the actual observed counters but
-must not be presented as a regular 24h/72h measurement. `invalid` means the
-observation was timely but has a continuity problem. Late observations can
-also have `issues`.
+A user systemd timer checks local deadlines each minute. It queries releases every
+five minutes and at the first timer tick after a pending 24h/72h deadline. A new
+release triggers publication immediately after detection and adds deadlines
+relative to GitHub's actual publication time. A newly captured 24h/72h measurement
+also triggers immediate publication. Otherwise, changed totals and star history
+are published together daily at **03:17 UTC**. Changes only to checking timestamps
+do not create commits. Star API failures retain the previous star files and
+retry after five minutes without blocking release or measurement publications. A powered-off or disconnected machine
+cannot capture historical counters; the next successful collection records any
+missed observation as late. Scheduled timestamps describe plans, not guarantees.
 
-GitHub Actions schedules can be delayed or disabled after repository inactivity.
-The collector records missed deadlines as `late`; historical counters cannot be
-reconstructed. Initial activation will therefore mark already overdue releases
-as late. Completed records remain available even if a release is later removed.
-API failures leave the existing JSON unchanged and fail the workflow.
+The collection API calls use public data. Publication uses the dedicated PIV
+key on YK2 (serial 38906327, slot 9a), registered on `pkb-rocks-bot` for both SSH
+authentication and commit signing. Bot commits use `bot@pkb.rocks` and this format:
 
-Asset-ID changes observed before the second snapshot invalidate subsequent
-timely observations. Replacements before the collector's first observation
-cannot always be detected; asset creation after a measurement's deadline is
-flagged. Do not edit assets during a measurement window if comparability is
-required. Changes after both snapshots are complete do not alter those records.
+```text
+chore(stats): refresh download counts and star history
 
-## Presentation handoff
+Automated statistics update by the PKB.rocks Bot.
+Cryptographic verification records origin and integrity; no individual approval is expressed.
+```
 
-The current home page displays a minimal chart and table. The SVG charts are
-regenerated only when their content changes. A future design can use the same
-data contract. Public consumers can read:
+The key is generated on the YubiKey and configured without PIN or touch for
+unattended operation. The separate APK signing slots retain their original
+policies. A short-lived agent exposes only the bot key and checks its hardware
+identity before every signature. Bot updates are separate from personal GitHub
+contributions. The bot email must be verified on GitHub.
+
+A process lock prevents overlapping local runs. Measurements are atomically saved to Fedora's `pending-release-stats.json` before
+rendering, star collection or publication. On the next run, published measurements
+remain authoritative and unpublished local measurements are preserved. This
+prevents a failed push or restart from replacing an already observed counter with
+a later counter. `next-run.json` records collection, daily and separate star-retry deadlines.
+A star retry does not repeat an already completed daily totals update. Other
+failures retry after five minutes while retaining any unfinished daily work.
+Rendering completes in a temporary directory. A temporary index creates one signed commit for all six
+files. Local SSH verification must pass before the non-force push. A concurrent
+branch update rejects publication instead of overwriting another writer's
+observations. Hardware, signing and push failures are recorded in the journal.
+
+## Public files
+
+The schema remains version 1; the current-count and schedule fields are additive.
 
 ```text
 https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/release-stats.json
+https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/nightly-downloads.svg
+https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/stable-downloads.svg
+https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/star-history.json
+https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/star-history.svg
+https://raw.githubusercontent.com/pkb-rocks/pkb-rocks.github.io/refs/heads/stats/star-history-dark.svg
 ```
 
-For stacked bars, use the 24h count as the lower segment and `72h - 24h` as the
-upper segment. The top is the 72h count. Use only `captured` measurements and
-match assets by ID before calculating differences. A release with only a valid
-24h snapshot has no upper segment yet. Missing, late, or invalid values are gaps,
-not zero downloads. A valid 72h value without a valid 24h value can be shown as
-a standalone total, but cannot be split into these segments.
+The star chart uses GitHub's daily history and displays the current repository
+star count separately. Chart headings are provided by the website instead of
+being repeated visibly inside the SVG. All SVGs retain accessible titles.
 
-Keep Stable and Nightly separate. Preserve APK variants in the data; summing
-them measures downloads across variants. Downloads do not identify unique users
-or installations, and intervening releases can affect a release's reach.
-
-## Local checks
+## Checks
 
 ```sh
-python3 -m unittest discover -s scripts/tests -p 'test_release_stats.py'
-python3 scripts/collect-release-stats.py --output /tmp/plektra-release-stats.json --charts-dir /tmp/plektra-release-charts
-```
-
-The second command reads the public API and writes only the specified local
-file. Set `GH_TOKEN` for authenticated API limits. Reusing that file preserves
-completed snapshots. Normal runs do not update the file when nothing changes.
-
-The production source repository is always `pkb-rocks/plektra`; the workflow
-token writes only this Pages repository. The public source API requires no
-additional cross-repository credentials. The existing branch-based Pages
-deployment remains in place. Only publication of website code rebuilds Pages;
-statistic updates are read from the public `stats` branch at page load.
-
-## GitHub stars
-
-`collect-star-history.py` reads GitHub's public daily star history and the current
-repository star count for `pkb-rocks/plektra`. The hourly workflow publishes
-`star-history.json`, `star-history.svg`, and `star-history-dark.svg` to the
-`stats` branch alongside the release statistics. The chart shows the cumulative
-daily history; the current star count appears separately because removed stars
-can make these values differ.
-
-The Plektra page reads these artifacts at page load and falls back to the last
-bundled snapshot when the live files are unavailable. The app README embeds the
-SVGs from the `stats` branch, so updates do not require editing its Markdown.
-
-```sh
-python3 scripts/collect-star-history.py --help
-python3 -m unittest discover -s scripts/tests -p 'test_*stats.py'
+python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+node scripts/tests/test-release-statistics.mjs
+node scripts/tests/test-download.mjs
+python3 scripts/run-release-stats.py --no-push
 ```

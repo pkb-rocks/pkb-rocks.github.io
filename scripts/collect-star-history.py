@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render public GitHub star history for the website and the repository README."""
+"""Render public GitHub star history for the website."""
 
 import argparse
 from datetime import datetime, timezone
@@ -67,7 +67,6 @@ def chart(data, dark=False):
              '<desc id="desc">Cumulative stars from GitHub’s daily star history. The current repository star count is shown separately.</desc>',
              f'<rect width="720" height="400" fill="{background}"/>',
              f'<g font-family="system-ui,sans-serif" fill="{foreground}">',
-             '<text x="24" y="33" font-size="21">GitHub star history</text>',
              f'<text x="696" y="33" text-anchor="end" font-size="18">{data["count"]} stars</text>']
     for index in range(5):
         value = maximum * index / 4

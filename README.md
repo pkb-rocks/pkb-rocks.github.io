@@ -34,19 +34,13 @@ Pages before HTTPS and Android App Links verification can succeed.
 
 ## Release statistics
 
-The hourly `Release download statistics` workflow reads public Plektra releases
-and saves immutable 24h/72h APK download snapshots on this repository's `stats`
-branch. The home page reads that JSON and its SVG charts directly; statistics
-updates do not require a Pages rebuild. See [the data contract](docs/release-statistics.md).
+Fedora publishes YubiKey-signed bot updates with download snapshots, current APK download counts and star
+history on the `stats` branch. The website reads those files directly; data
+updates do not require rebuilding Pages. GitHub Actions tests the collector
+scripts and no longer writes statistics. See [the data contract](docs/release-statistics.md)
+and [Fedora operation](ops/fedora/README.md).
 
-The Plektra product page at `/` combines the device showcase, feature
-chapters, Stable and Nightly download links, release download statistics, and a
-separate GitHub star history. Its right-hand desktop contents navigation follows
-the reading position; smaller screens use the horizontal contents strip.
-Showcase assets are rebuilt with `node tools/build-plektra-assets.mjs ../plektra`.
-The hourly statistics workflow updates the public `stats` branch independently
-of website builds; the Plektra repository README embeds its star charts directly.
-
-The asset builder also refreshes screenshot content versions in `index.html`, so browser previews request new images after a rebuild.
-
-Keyboard-bar images use native transparent Debug exports when available. This retains both LED rails and their spacing without screenshot background subtraction. Bar comparison images share a light backing in the Nightly page theme so inactive LEDs remain visible. Software keyboard themes are shown vertically; slide text wraps within its own column.
+The product page uses its mobile contents strip and desktop side navigation.
+Open Collective is linked prominently in the header. Screenshot versions in
+`index.html` refresh when assets are rebuilt, so browsers request the updated
+images. The Plektra README uses visual-only exports with its own headings.

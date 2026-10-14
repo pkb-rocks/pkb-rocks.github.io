@@ -1,0 +1,8 @@
+{
+  "account": "pkb-rocks-bot",
+  "name": "PKB.rocks Bot",
+  "email": "bot@pkb.rocks",
+  "serial": 38906327,
+  "slot": "9a",
+  "public_key": "yubikey/bot.pub"
+}

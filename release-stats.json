@@ -175,7 +175,26 @@
             }
           ]
         },
-        "72h": null
+        "72h": {
+          "due_at": "2026-10-14T18:59:43Z",
+          "captured_at": "2026-10-14T20:47:13Z",
+          "status": "captured",
+          "issues": [],
+          "assets": [
+            {
+              "asset_id": 631547206,
+              "name": "Plektra-26.10-nightly.11.184948Z-full.apk",
+              "created_at": "2026-10-11T18:59:06Z",
+              "download_count": 396
+            },
+            {
+              "asset_id": 631547422,
+              "name": "Plektra-26.10-nightly.11.184948Z-no-accessibility.apk",
+              "created_at": "2026-10-11T18:59:15Z",
+              "download_count": 26
+            }
+          ]
+        }
       }
     }
   ]

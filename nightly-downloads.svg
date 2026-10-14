@@ -3,7 +3,6 @@
 <desc id="desc">Snapshots after 24 and 72 hours. The upper segment contains additional downloads between those times. Missing measurements are not zero.</desc>
 <rect width="720" height="400" fill="#0a0f14"/>
 <g font-family="system-ui,sans-serif" fill="#edf8fa">
-<text x="18" y="29" font-size="20">Nightly APK downloads</text>
 <rect x="18" y="46" width="13" height="13" fill="#72e6ec"/><text x="39" y="58" font-size="13">Up to 24 h</text>
 <rect x="180" y="46" width="13" height="13" fill="#3c7b77"/><text x="201" y="58" font-size="13">Additional downloads up to 72 h</text>
 <path d="M54 292.0H700" stroke="#2b3a41"/>
@@ -20,20 +19,25 @@
 <g><title>nightly/v26.10-nightly.07.214711Z</title>
 <rect x="113.8" y="218.1" width="42.0" height="73.9" fill="none" stroke="#3c7b77"/>
 <text x="134.8" y="210.1" text-anchor="middle" font-size="13">163</text>
+<circle cx="125.8" cy="218.6" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>162 downloads measured after 68.0 h (2026-10-10T18:34:29Z)</title></circle>
 </g>
 <text x="296.2" y="314" transform="rotate(35 296.2 314)" font-size="11">2026-10-08</text>
 <g><title>nightly/v26.10-nightly.08.211000Z</title>
 <text x="296.2" y="283" text-anchor="middle" font-size="16">—</text>
+<circle cx="287.2" cy="207.2" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>187 downloads measured after 45.2 h (2026-10-10T18:34:29Z)</title></circle>
+<circle cx="305.2" cy="206.8" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>188 downloads measured after 75.2 h (2026-10-12T00:36:06Z)</title></circle>
 </g>
 <text x="457.8" y="314" transform="rotate(35 457.8 314)" font-size="11">2026-10-09</text>
 <g><title>nightly/v26.10-nightly.09.203552Z</title>
 <rect x="436.8" y="198.2" width="42.0" height="93.8" fill="#72e6ec"/>
 <text x="457.8" y="190.2" text-anchor="middle" font-size="13">207</text>
+<circle cx="466.8" cy="161.9" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>287 downloads measured after 75.8 h (2026-10-13T00:45:50Z)</title></circle>
 </g>
 <text x="619.2" y="314" transform="rotate(35 619.2 314)" font-size="11">2026-10-11</text>
 <g><title>nightly/v26.10-nightly.11.184948Z</title>
 <rect x="598.2" y="100.7" width="42.0" height="191.3" fill="none" stroke="#3c7b77"/>
 <text x="619.2" y="92.7" text-anchor="middle" font-size="13">422</text>
+<circle cx="610.2" cy="184.1" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>238 downloads measured after 29.8 h (2026-10-13T00:45:50Z)</title></circle>
 </g>
-<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Outlined bars: 72 h total without a valid 24 h snapshot</text>
+<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Orange circles: late observations; see table for actual time</text>
 </g></svg>

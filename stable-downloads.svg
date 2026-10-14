@@ -3,7 +3,6 @@
 <desc id="desc">Snapshots after 24 and 72 hours. The upper segment contains additional downloads between those times. Missing measurements are not zero.</desc>
 <rect width="720" height="400" fill="#0a0f14"/>
 <g font-family="system-ui,sans-serif" fill="#edf8fa">
-<text x="18" y="29" font-size="20">Stable APK downloads</text>
 <rect x="18" y="46" width="13" height="13" fill="#72e6ec"/><text x="39" y="58" font-size="13">Up to 24 h</text>
 <rect x="180" y="46" width="13" height="13" fill="#3c7b77"/><text x="201" y="58" font-size="13">Additional downloads up to 72 h</text>
 <path d="M54 292.0H700" stroke="#2b3a41"/>
@@ -17,5 +16,5 @@
 <path d="M54 88.0H700" stroke="#2b3a41"/>
 <text x="46" y="92.0" text-anchor="end" font-size="12">50</text>
 <text x="377" y="178" text-anchor="middle" font-size="16">Awaiting valid snapshots</text>
-<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Outlined bars: 72 h total without a valid 24 h snapshot</text>
+<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Orange circles: late observations; see table for actual time</text>
 </g></svg>

@@ -3,7 +3,6 @@
 <desc id="desc">Cumulative stars from GitHub’s daily star history. The current repository star count is shown separately.</desc>
 <rect width="720" height="400" fill="#101820"/>
 <g font-family="system-ui,sans-serif" fill="#edf2f7">
-<text x="24" y="33" font-size="21">GitHub star history</text>
 <text x="696" y="33" text-anchor="end" font-size="18">19 stars</text>
 <path d="M58 318.0H696" stroke="#334250"/>
 <text x="48" y="322.0" text-anchor="end" font-size="12">0</text>

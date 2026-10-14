@@ -43,6 +43,17 @@
             }
           ]
         }
+      },
+      "current": {
+        "captured_at": "2026-10-14T21:34:04Z",
+        "assets": [
+          {
+            "asset_id": 619966095,
+            "name": "Plektra-26.10-nightly.07.214711Z-github.apk",
+            "created_at": "2026-10-07T22:19:48Z",
+            "download_count": 163
+          }
+        ]
       }
     },
     {
@@ -85,6 +96,17 @@
             }
           ]
         }
+      },
+      "current": {
+        "captured_at": "2026-10-14T21:34:04Z",
+        "assets": [
+          {
+            "asset_id": 623044335,
+            "name": "Plektra-26.10-nightly.08.211000Z-full.apk",
+            "created_at": "2026-10-08T21:22:15Z",
+            "download_count": 191
+          }
+        ]
       }
     },
     {
@@ -140,6 +162,23 @@
             }
           ]
         }
+      },
+      "current": {
+        "captured_at": "2026-10-14T21:34:04Z",
+        "assets": [
+          {
+            "asset_id": 626154944,
+            "name": "Plektra-26.10-nightly.09.203552Z-full.apk",
+            "created_at": "2026-10-09T20:55:17Z",
+            "download_count": 271
+          },
+          {
+            "asset_id": 626155172,
+            "name": "Plektra-26.10-nightly.09.203552Z-no-accessibility.apk",
+            "created_at": "2026-10-09T20:55:25Z",
+            "download_count": 19
+          }
+        ]
       }
     },
     {
@@ -195,7 +234,28 @@
             }
           ]
         }
+      },
+      "current": {
+        "captured_at": "2026-10-14T21:34:04Z",
+        "assets": [
+          {
+            "asset_id": 631547206,
+            "name": "Plektra-26.10-nightly.11.184948Z-full.apk",
+            "created_at": "2026-10-11T18:59:06Z",
+            "download_count": 396
+          },
+          {
+            "asset_id": 631547422,
+            "name": "Plektra-26.10-nightly.11.184948Z-no-accessibility.apk",
+            "created_at": "2026-10-11T18:59:15Z",
+            "download_count": 26
+          }
+        ]
       }
     }
-  ]
+  ],
+  "last_checked_at": "2026-10-14T21:34:04Z",
+  "next_measurement_at": null,
+  "next_collection_at": "2026-10-14T21:39:00Z",
+  "next_publication_at": "2026-10-15T03:17:00Z"
 }

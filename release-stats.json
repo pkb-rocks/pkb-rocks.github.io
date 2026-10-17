@@ -45,7 +45,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-16T03:17:01Z",
+        "captured_at": "2026-10-17T03:17:01Z",
         "assets": [
           {
             "asset_id": 619966095,
@@ -98,7 +98,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-16T03:17:01Z",
+        "captured_at": "2026-10-17T03:17:01Z",
         "assets": [
           {
             "asset_id": 623044335,
@@ -164,13 +164,13 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-16T03:17:01Z",
+        "captured_at": "2026-10-17T03:17:01Z",
         "assets": [
           {
             "asset_id": 626154944,
             "name": "Plektra-26.10-nightly.09.203552Z-full.apk",
             "created_at": "2026-10-09T20:55:17Z",
-            "download_count": 272
+            "download_count": 273
           },
           {
             "asset_id": 626155172,
@@ -236,26 +236,26 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-16T03:17:01Z",
+        "captured_at": "2026-10-17T03:17:01Z",
         "assets": [
           {
             "asset_id": 631547206,
             "name": "Plektra-26.10-nightly.11.184948Z-full.apk",
             "created_at": "2026-10-11T18:59:06Z",
-            "download_count": 448
+            "download_count": 492
           },
           {
             "asset_id": 631547422,
             "name": "Plektra-26.10-nightly.11.184948Z-no-accessibility.apk",
             "created_at": "2026-10-11T18:59:15Z",
-            "download_count": 31
+            "download_count": 33
           }
         ]
       }
     }
   ],
-  "last_checked_at": "2026-10-16T03:17:01Z",
+  "last_checked_at": "2026-10-17T03:17:01Z",
   "next_measurement_at": null,
-  "next_collection_at": "2026-10-16T03:22:00Z",
-  "next_publication_at": "2026-10-17T03:17:00Z"
+  "next_collection_at": "2026-10-17T03:22:00Z",
+  "next_publication_at": "2026-10-18T03:17:00Z"
 }

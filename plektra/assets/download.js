@@ -4,7 +4,7 @@ import { CHANNELS, findAsset, findChecksums, latestRelease } from "./releases.js
 const channel = document.documentElement.dataset.channel;
 const params = new URLSearchParams(location.search);
 const target = params.get("to") ?? "apk";
-const variant = params.get("variant") ?? "full";
+const variant = params.get("variant") ?? (channel === "stable" ? "no-accessibility" : "full");
 const status = document.querySelector("[data-status]");
 const fallback = document.querySelector("[data-fallback]");
 const notes = document.querySelector("[data-notes]");

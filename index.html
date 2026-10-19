@@ -475,14 +475,14 @@
           <div class="actions" data-reveal>
             <a class="dl stable pending" data-dl="stable" role="link" aria-disabled="true">
               <span class="tile"><small>Stable</small><strong data-dl-tile>26.10</strong></span>
-              <span class="label"><b>Download Stable</b><span data-dl-sub>Planned for 26.10</span></span>
+              <span class="label"><b>Download Stable</b><span data-dl-sub>Checking availability…</span></span>
             </a>
             <a class="dl nightly" href="/plektra/download/nightly/" data-dl="nightly">
               <span class="tile"><small data-dl-small>26.10</small><strong data-dl-tile>09</strong></span>
               <span class="label"><b>Download Nightly</b><span data-dl-sub>Built 9 October 2026, 20:35 UTC</span></span>
             </a>
           </div>
-          <p class="hero-meta" data-hero-meta data-reveal>Stable is planned for 26.10. Until then, Nightly is the newest build.</p>
+          <p class="hero-meta" data-hero-meta data-reveal>Stable is for everyday use. Nightly gets new features first.</p>
         </div>
         <div class="hero-shot" data-reveal>
           <img src="/plektra/assets/shots/stable/01-devices.webp?v=aea11b4e67b4" data-shot="01-devices" width="1320" height="996"
@@ -627,14 +627,14 @@
                 <img src="/plektra/assets/logo-stable.svg" alt="" width="48" height="48">
                 <h3>Plektra</h3>
               </header>
-              <p class="desc">The stable release. New versions follow the calendar, starting with 26.10.</p>
+              <p class="desc">The release for everyday use. Version 26.10 brings Plektra’s first Stable release.</p>
               <p class="calver" data-calver><span class="ym">26.10</span></p>
-              <p class="calver-date" data-calver-date>Planned for <strong>October 2026</strong></p>
+              <p class="calver-date" data-calver-date><strong>October 2026</strong></p>
               <p class="planned" data-when-missing>No stable release is published yet.</p>
               <div data-when-available hidden>
-                <a class="btn primary" href="/plektra/download/stable/">Download APK</a>
+                <a class="btn primary" href="/plektra/download/stable/" data-apk-variant="no-accessibility">Download Plektra</a>
                 <div class="links">
-                  <a href="/plektra/download/stable/?variant=no-accessibility">APK without accessibility service</a>
+                  <a href="/plektra/download/stable/?variant=full" data-apk-variant="full">Full APK for Clicks launcher buttons</a>
                   <a href="/plektra/download/stable/?to=notes">Release notes</a>
                   <a href="/plektra/download/stable/?to=checksums">SHA256SUMS</a>
                 </div>
@@ -653,7 +653,7 @@
               <div data-when-available>
                 <a class="btn primary" href="/plektra/download/nightly/">Download APK</a>
                 <div class="links">
-                  <a href="/plektra/download/nightly/?variant=no-accessibility">APK without accessibility service</a>
+                  <a href="/plektra/download/nightly/?variant=no-accessibility" data-apk-variant="no-accessibility">APK without accessibility service</a>
                   <a href="/plektra/download/nightly/?to=notes">Release notes</a>
                   <a href="/plektra/download/nightly/?to=checksums">SHA256SUMS</a>
                 </div>
@@ -680,7 +680,7 @@
             </a>
           </div>
 
-          <p class="variant-note" data-reveal>The full APK includes the Clicks accessibility service for launcher-button remapping. The APK without it keeps every other keyboard feature, including TalkBack support. Both variants are the same app and replace each other. <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/getting-started.md">Installation guide</a> and <a href="https://github.com/pkb-rocks/plektra/releases">all releases</a>.</p>
+          <p class="variant-note" data-reveal>The recommended Stable download includes the regular keyboard features and TalkBack support, without the additional Clicks accessibility service. Choose the Full APK if you need Clicks launcher-button remapping. You can install either variant over the other and keep your settings and data. <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/getting-started.md">Installation guide</a> and <a href="https://github.com/pkb-rocks/plektra/releases">all releases</a>.</p>
 
           <div class="both" data-reveal>
             <div>
@@ -820,7 +820,10 @@
           nightlyButton.querySelector("[data-dl-sub]").textContent = `Built ${Number(nightly.dd)} ${nightly.month} ${nightly.year}, ${nightly.hh}:${nightly.min} UTC`;
         }
         if (stable) meta.textContent = `Stable ${stable.base} is the release for everyday use. Nightly gets new features first.`;
-        else if (state.stable === null) meta.textContent = "Stable is planned for 26.10. Until then, Nightly is the newest build.";
+        else if (state.stable === null) {
+          stableButton.querySelector("[data-dl-sub]").textContent = "Not published yet";
+          meta.textContent = "The first Stable release will appear here when it is published. Nightly is available now.";
+        }
       }
 
       function renderCard(channel, release) {
@@ -838,7 +841,9 @@
           calver.innerHTML = `<span class="ym">${version.base}</span>${version.patch ? `<span class="rest">.<b>${version.patch}</b></span>` : ""}`;
           date.innerHTML = `<strong>${version.month} ${version.year}</strong>, released ${formatDate(release.published_at)}`;
         }
-        card.querySelector('[href$="variant=no-accessibility"]').hidden = !findAsset(release, "no-accessibility");
+        for (const link of card.querySelectorAll("[data-apk-variant]")) {
+          link.hidden = !findAsset(release, link.dataset.apkVariant);
+        }
       }
 
       function applyChannel(channel, save) {

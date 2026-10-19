@@ -16,8 +16,9 @@ new releases need no change here:
 
 | Link | Target |
 | --- | --- |
-| `/plektra/download/stable/` | newest normal release, full APK |
+| `/plektra/download/stable/` | newest normal release, recommended APK without the Clicks accessibility service |
 | `/plektra/download/nightly/` | newest `nightly/` pre-release, full APK |
+| `?variant=full` | full APK with Clicks launcher-button remapping |
 | `?variant=no-accessibility` | APK without the Clicks accessibility service |
 | `?to=notes` | release page |
 | `?to=checksums` | `SHA256SUMS` |

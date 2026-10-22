@@ -3,7 +3,7 @@
 <desc id="desc">Cumulative stars from GitHub’s daily star history. The current repository star count is shown separately.</desc>
 <rect width="720" height="400" fill="#f4f1e9"/>
 <g font-family="system-ui,sans-serif" fill="#242729">
-<text x="696" y="33" text-anchor="end" font-size="18">23 stars</text>
+<text x="696" y="33" text-anchor="end" font-size="18">24 stars</text>
 <path d="M58 318.0H696" stroke="#d3cec3"/>
 <text x="48" y="322.0" text-anchor="end" font-size="12">0</text>
 <path d="M58 259.8H696" stroke="#d3cec3"/>
@@ -14,10 +14,10 @@
 <text x="48" y="147.2" text-anchor="end" font-size="12">18.75</text>
 <path d="M58 85.0H696" stroke="#d3cec3"/>
 <text x="48" y="89.0" text-anchor="end" font-size="12">25</text>
-<path d="M58.0 318.0 L67.7 318.0 L77.3 318.0 L87.0 318.0 L96.7 318.0 L106.3 318.0 L116.0 318.0 L125.7 318.0 L135.3 318.0 L145.0 318.0 L154.7 318.0 L164.3 318.0 L174.0 318.0 L183.7 318.0 L193.3 318.0 L203.0 318.0 L212.7 318.0 L222.3 318.0 L232.0 318.0 L241.7 318.0 L251.3 318.0 L261.0 318.0 L270.7 318.0 L280.3 318.0 L290.0 318.0 L299.7 318.0 L309.3 318.0 L319.0 318.0 L328.7 318.0 L338.3 318.0 L348.0 318.0 L357.7 318.0 L367.3 318.0 L377.0 318.0 L386.7 318.0 L396.3 318.0 L406.0 318.0 L415.7 318.0 L425.3 318.0 L435.0 318.0 L444.7 318.0 L454.3 299.4 L464.0 280.7 L473.7 280.7 L483.3 262.1 L493.0 262.1 L502.7 252.8 L512.3 252.8 L522.0 234.1 L531.7 234.1 L541.3 215.5 L551.0 206.2 L560.7 206.2 L570.3 187.5 L580.0 168.9 L589.7 150.2 L599.3 150.2 L609.0 140.9 L618.7 140.9 L628.3 140.9 L638.0 131.6 L647.7 122.3 L657.3 103.6 L667.0 103.6 L676.7 103.6 L686.3 103.6 L696.0 103.6" fill="none" stroke="#fc7a0f" stroke-width="3"/>
+<path d="M58.0 318.0 L67.5 318.0 L77.0 318.0 L86.6 318.0 L96.1 318.0 L105.6 318.0 L115.1 318.0 L124.7 318.0 L134.2 318.0 L143.7 318.0 L153.2 318.0 L162.7 318.0 L172.3 318.0 L181.8 318.0 L191.3 318.0 L200.8 318.0 L210.4 318.0 L219.9 318.0 L229.4 318.0 L238.9 318.0 L248.4 318.0 L258.0 318.0 L267.5 318.0 L277.0 318.0 L286.5 318.0 L296.1 318.0 L305.6 318.0 L315.1 318.0 L324.6 318.0 L334.1 318.0 L343.7 318.0 L353.2 318.0 L362.7 318.0 L372.2 318.0 L381.8 318.0 L391.3 318.0 L400.8 318.0 L410.3 318.0 L419.9 318.0 L429.4 318.0 L438.9 318.0 L448.4 299.4 L457.9 280.7 L467.5 280.7 L477.0 262.1 L486.5 262.1 L496.0 252.8 L505.6 252.8 L515.1 234.1 L524.6 234.1 L534.1 215.5 L543.6 206.2 L553.2 206.2 L562.7 187.5 L572.2 168.9 L581.7 150.2 L591.3 150.2 L600.8 140.9 L610.3 140.9 L619.8 140.9 L629.3 131.6 L638.9 122.3 L648.4 103.6 L657.9 103.6 L667.4 103.6 L677.0 103.6 L686.5 94.3 L696.0 94.3" fill="none" stroke="#fc7a0f" stroke-width="3"/>
 <text x="58.0" y="345" text-anchor="start" font-size="12">16 Aug 2026</text>
 <text x="270.7" y="345" text-anchor="middle" font-size="12">07 Sep 2026</text>
 <text x="483.3" y="345" text-anchor="middle" font-size="12">29 Sep 2026</text>
-<text x="696.0" y="345" text-anchor="end" font-size="12">21 Oct 2026</text>
-<text x="24" y="382" font-size="12" fill="#535960">pkb-rocks/plektra · Updated 2026-10-19 · Source: GitHub</text>
+<text x="696.0" y="345" text-anchor="end" font-size="12">22 Oct 2026</text>
+<text x="24" y="382" font-size="12" fill="#535960">pkb-rocks/plektra · Updated 2026-10-22 · Source: GitHub</text>
 </g></svg>

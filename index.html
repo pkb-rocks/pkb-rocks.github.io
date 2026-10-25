@@ -116,7 +116,6 @@
         text-decoration: none;
         white-space: nowrap;
       }
-      .toc a span { margin-right: 8px; font: 500 .8rem var(--mono); }
       .toc .sub a { font-size: .86rem; }
       .toc .sub + li:not(.sub) { margin-left: 6px; }
       .toc a:hover { color: var(--text); }
@@ -371,20 +370,15 @@
       .calver-date { margin: 0 0 26px; font-size: .98rem; color: var(--muted); }
       .calver-date strong { color: var(--text); font-weight: 600; }
 
-      /* Section labels */
-      .label-row { display: flex; gap: 10px; margin-bottom: 18px; font: 500 .85rem var(--mono); color: var(--muted); }
-      .label-row span:first-child { color: var(--accent-text); }
-      /* Scroll reveal, modelled on the reference: fade, rise 28px and unblur once. */
+      /* Scroll reveal: fade and rise 28px once. */
       .reveal-on [data-reveal] {
         opacity: 0;
         transform: translateY(28px);
-        filter: blur(8px);
         transition:
           opacity .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s),
-          transform .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s),
-          filter .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s);
+          transform .9s cubic-bezier(.215, .61, .355, 1) var(--delay, 0s);
       }
-      .reveal-on [data-reveal].is-in { opacity: 1; transform: none; filter: none; }
+      .reveal-on [data-reveal].is-in { opacity: 1; transform: none; }
       .rule { height: 1px; background: var(--line); transform-origin: left; }
       .reveal-on .rule { transform: scaleX(0); transition: transform .7s cubic-bezier(.45, 0, .2, 1); }
       .reveal-on .rule.is-in { transform: scaleX(1); }
@@ -454,13 +448,13 @@
       <nav class="toc" aria-label="Contents">
         <div class="wrap">
           <ol>
-            <li><a href="#features"><span>01</span>Features</a></li>
+            <li><a href="#features">Features</a></li>
             <li class="sub"><a href="#keys">Keys and bar</a></li>
             <li class="sub"><a href="#text">Text and tools</a></li>
             <li class="sub"><a href="#look">Look and layout</a></li>
-            <li><a href="#download"><span>02</span>Download</a></li>
-            <li><a href="#devices"><span>03</span>Devices</a></li>
-            <li><a href="#build"><span>04</span>Build</a></li>
+            <li><a href="#download">Download</a></li>
+            <li><a href="#devices">Devices</a></li>
+            <li><a href="#build">Build</a></li>
           </ol>
         </div>
         <div class="toc-progress" data-toc-progress></div>
@@ -495,8 +489,7 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>01</span><span>Features</span></p>
-              <h2>Device showcase</h2>
+              <h2>Features</h2>
             </div>
             <p>Real captures from a Titan 2, a Titan 2 Elite and a Pixel 7a. Select a picture to enlarge it.</p>
           </div>
@@ -615,7 +608,6 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>02</span><span>Download</span></p>
               <h2>Download.</h2>
             </div>
             <p>Stable is the release for everyday use. Nightly gets new features first and can contain bugs. Version numbers are dates: 26.10 is October 2026, and a Nightly adds the day and the UTC build time.</p>
@@ -715,7 +707,6 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>03</span><span>Devices</span></p>
               <h2>Physical and software keyboards.</h2>
             </div>
             <p>A selection of devices tested directly or supported by the community. Plektra supports built-in physical keyboards, Clicks keyboards and standalone touch input.</p>
@@ -735,7 +726,6 @@
         <div class="wrap">
           <div class="section-head" data-reveal>
             <div>
-              <p class="label-row"><span>04</span><span>Build</span></p>
               <h2>Build it yourself.</h2>
             </div>
             <p>Plektra is free software under the GNU General Public License v3.0. You need JDK 17 and the Android SDK for compile SDK 36.</p>
@@ -898,7 +888,7 @@
         for (const el of document.querySelectorAll("[data-reveal], .rule")) revealer.observe(el);
       }
 
-      import("/plektra/assets/contents.js?v=8d8e473fc07f");
+      import("/plektra/assets/contents.js?v=b28b797e09c7");
 
       // Screenshot viewer.
       const viewer = document.querySelector("[data-viewer]");

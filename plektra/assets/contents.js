@@ -2,9 +2,7 @@ const nav = document.querySelector('.toc');
 const list = nav.querySelector('ol');
 const links = [...nav.querySelectorAll('a')];
 const items = links.map(link => {
-  const number = link.querySelector('span');
-  if (number) number.classList.add('contents-number');
-  const label = link.textContent.replace(/^\d+/, '').trim();
+  const label = link.textContent.trim();
   const text = document.createElement('span');
   text.className = 'contents-label';
   for (const char of label.toUpperCase()) {
@@ -14,7 +12,7 @@ const items = links.map(link => {
     text.append(letter);
   }
   link.setAttribute('aria-label', label);
-  link.replaceChildren(...(number ? [number] : []), text);
+  link.replaceChildren(text);
   return {link, node: link.parentElement, target: document.querySelector(link.hash), letters: [...text.children]};
 });
 const desktop = matchMedia('(min-width: 1280px) and (hover: hover) and (pointer: fine)');

@@ -22,8 +22,8 @@ const slidesDir = join(plektraRepo, "docs/showcase/exports/stable/landscape");
 const brandingDir = join(plektraRepo, "docs/branding");
 const outDir = join(pagesRoot, "plektra/assets");
 
-// Shared crop for every slide visual. It covers the union of all visual areas
-// (x 794..1842, y 148..938) with a small margin, so every image has one ratio.
+// Default crop covers the slide visuals (x 794..1842, y 148..938).
+// The four-phone gallery uses a tighter vertical crop.
 const VIEW = { x: 770, y: 130, width: 1100, height: 830 };
 const RENDER_WIDTH = 1320;
 const WEBP_QUALITY = "82";
@@ -44,6 +44,7 @@ function isVisual(tag, a) {
 }
 
 function visualSvg(svg, theme, id) {
+  const view = id === "16-software-keyboard" ? { ...VIEW, y: 250, height: 600 } : VIEW;
   let body = svg
     .replace(/^<svg[^>]*>/, "")
     .replace(/<\/svg>\s*$/, "")
@@ -55,8 +56,8 @@ function visualSvg(svg, theme, id) {
   ].includes(id);
   const label = lightBarComparison ? THEMES.stable.label : THEMES[theme].label;
   for (const colour of LABEL_COLOURS) body = body.replaceAll(`fill="${colour}"`, `fill="${label}"`);
-  if (lightBarComparison) body = `<rect x="${VIEW.x}" y="${VIEW.y}" width="${VIEW.width}" height="${VIEW.height}" fill="#CFDDE7"/>${body}`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${VIEW.width}" height="${VIEW.height}" viewBox="${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}">${body}</svg>`;
+  if (lightBarComparison) body = `<rect x="${view.x}" y="${view.y}" width="${view.width}" height="${view.height}" fill="#CFDDE7"/>${body}`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${view.width}" height="${view.height}" viewBox="${view.x} ${view.y} ${view.width} ${view.height}">${body}</svg>`;
 }
 
 const work = join(tmpdir(), `plektra-web-assets-${process.pid}`);

@@ -413,6 +413,7 @@
         html { scroll-behavior: auto; }
         * { transition: none !important; }
       }
+      .software-gallery, .theme-gallery { grid-column: 1 / -1; }
       .release-statistics { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
       .release-statistics > p, .star-history p { color: var(--muted); }
       .statistics-results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
@@ -479,8 +480,8 @@
           <p class="hero-meta" data-hero-meta data-reveal>Stable is for everyday use. Nightly gets new features first.</p>
         </div>
         <div class="hero-shot" data-reveal>
-          <img src="/plektra/assets/shots/stable/01-devices.webp?v=aea11b4e67b4" data-shot="01-devices" width="1320" height="996"
-               alt="Plektra on a Unihertz Titan 2, a Titan 2 Elite and a Pixel 7a, each suggesting “tomorrow” in a note" data-shot-version="aea11b4e67b4">
+          <img src="/plektra/assets/shots/stable/01-devices.webp?v=3e86c067e1b8" data-shot="01-devices" width="1320" height="996"
+               alt="Plektra on a Unihertz Titan 2, a Titan 2 Elite and a Pixel 7a, each suggesting “tomorrow” in a note" data-shot-version="3e86c067e1b8">
         </div>
       </div>
 
@@ -491,7 +492,7 @@
             <div>
               <h2>Features</h2>
             </div>
-            <p>Real captures from a Titan 2, a Titan 2 Elite and a Pixel 7a. Select a picture to enlarge it.</p>
+            <p>Keyboard controls, text tools and layouts. Select a screenshot to enlarge it.</p>
           </div>
 
           <div class="chapter" id="keys">
@@ -582,13 +583,13 @@
               <p>Interface themes, regional layouts and software keyboard mode.</p>
             </div>
             <div class="grid" data-reveal-group>
-              <figure class="feature" data-reveal>
+              <figure class="feature software-gallery" data-reveal>
+                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/16-software-keyboard.webp?v=9881f3f3caf6" data-shot="16-software-keyboard" width="1320" height="720" loading="lazy" alt="Four Pixel 7a software keyboards in Cloud Tap, Cobalt, Volcanic Dusk and High Contrast" data-shot-version="9881f3f3caf6"></button>
+                <figcaption><h4>Standalone software keyboard mode</h4><p>Use the software keyboard on phones without physical keys, with suggestions, symbols and snippets.</p></figcaption>
+              </figure>
+              <figure class="feature theme-gallery" data-reveal>
                 <button class="shot" type="button"><img src="/plektra/assets/shots/stable/15-hardware-themes.webp?v=64c69d84a2a1" data-shot="15-hardware-themes" width="1320" height="996" loading="lazy" alt="Nine keyboard bar themes, from Plektra Dark to Transparent Dark" data-shot-version="64c69d84a2a1"></button>
                 <figcaption><h4>Nine built-in interface themes</h4><p>Choose from nine built-in keyboard bar themes.</p></figcaption>
-              </figure>
-              <figure class="feature" data-reveal>
-                <button class="shot" type="button"><img src="/plektra/assets/shots/stable/16-software-keyboard.webp?v=4caa95847b95" data-shot="16-software-keyboard" width="1320" height="996" loading="lazy" alt="Software keyboard on a Pixel 7a in two themes" data-shot-version="4caa95847b95"></button>
-                <figcaption><h4>Standalone software keyboard mode</h4><p>Use the software keyboard on phones without physical keys, with suggestions, symbols and snippets.</p></figcaption>
               </figure>
               <figure class="feature" data-reveal>
                 <button class="shot" type="button"><img src="/plektra/assets/shots/stable/17-layouts.webp?v=0de84ca6a3f9" data-shot="17-layouts" width="1320" height="996" loading="lazy" alt="QWERTY, AZERTY and QWERTZ layouts" data-shot-version="0de84ca6a3f9"></button>

@@ -116,19 +116,25 @@ class SnapshotTests(unittest.TestCase):
 
 
 class PersistenceTests(unittest.TestCase):
-    def test_chart_stacks_increment_and_omits_late_counts(self):
+    def test_chart_keeps_measurements_independent_and_labels_late_values(self):
         state = stats.update(empty(), [release(100)], START + timedelta(hours=24))
         state = stats.update(state, [release(150)], START + timedelta(hours=72))
         svg = ET.fromstring(stats.chart(state, "nightly"))
-        rectangles = svg.findall('.//{http://www.w3.org/2000/svg}rect')
-        segments = [r for r in rectangles if float(r.attrib.get('width', 0)) == 42]
-        self.assertEqual(2, len(segments))
-        self.assertEqual(2, float(segments[0].attrib['height']) / float(segments[1].attrib['height']))
+        bars = [r for r in svg.findall('.//{http://www.w3.org/2000/svg}rect') if 'data-measurement' in r.attrib]
+        self.assertEqual(2, len(bars))
+        self.assertAlmostEqual(2 / 3, float(bars[0].attrib['width']) / float(bars[1].attrib['width']), places=4)
         state['releases'][0]['snapshots']['24h']['status'] = 'late'
-        svg = ET.fromstring(stats.chart(state, 'nightly'))
-        segments = [r for r in svg.findall('.//{http://www.w3.org/2000/svg}rect') if float(r.attrib.get('width', 0)) == 42]
-        self.assertEqual(1, len(segments))
-        self.assertEqual('none', segments[0].attrib['fill'])
+        state['releases'][0]['snapshots']['24h']['captured_at'] = stats.iso(START + timedelta(hours=30))
+        text = stats.chart(state, 'nightly')
+        self.assertIn('100 · at 30.0 h · late', text)
+        self.assertIn('fill="url(#late)"', text)
+        self.assertNotIn('<circle', text)
+        state['releases'][0]['snapshots']['24h']['status'] = 'invalid'
+        state['releases'][0]['snapshots']['72h'] = None
+        text = stats.chart(state, 'nightly')
+        self.assertIn('Invalid', text)
+        self.assertIn('Pending', text)
+        self.assertNotIn('data-measurement=', text)
 
     def test_api_pagination_and_token_header(self):
         responses = [io.BytesIO(json.dumps([release()] * 100).encode()), io.BytesIO(b"[]")]

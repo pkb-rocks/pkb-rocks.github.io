@@ -137,56 +137,43 @@ def total(snapshot):
 
 
 def chart(state, channel):
-    records = [r for r in state["releases"] if r["channel"] == channel][-12:]
-    width, height = 720, 400
-    left, right, top, bottom = 54, 700, 88, 292
-    values = [(total(r["snapshots"]["24h"]), total(r["snapshots"]["72h"])) for r in records]
-    late_values = [sum(a["download_count"] for a in snap["assets"])
-                   for r in records for snap in r["snapshots"].values()
-                   if snap and snap["status"] == "late" and not snap["issues"]]
-    maximum = max([v for pair in values for v in pair if v is not None] + late_values + [1])
-    maximum = max(50, ((maximum + 49) // 50) * 50)
-    def y(value):
-        return bottom - value / maximum * (bottom - top)
+    records = [r for r in state["releases"] if r["channel"] == channel][-12:][::-1]
+    width, height = 720, max(180, 100 + len(records) * 114)
+    valid = [snap for record in records for snap in record["snapshots"].values()
+             if snap and snap["status"] in ("captured", "late") and not snap.get("issues")]
+    maximum = max([sum(a["download_count"] for a in snap["assets"]) for snap in valid] + [1])
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
              f'<title id="title">Plektra {channel.title()} APK downloads per release</title>',
-             '<desc id="desc">Snapshots after 24 and 72 hours. The upper segment contains additional downloads between those times. Missing measurements are not zero.</desc>',
-             '<rect width="720" height="400" fill="#0a0f14"/>',
-             '<g font-family="system-ui,sans-serif" fill="#edf8fa">',
-             '<rect x="18" y="46" width="13" height="13" fill="#72e6ec"/><text x="39" y="58" font-size="13">Up to 24 h</text>',
-             '<rect x="180" y="46" width="13" height="13" fill="#3c7b77"/><text x="201" y="58" font-size="13">Additional downloads up to 72 h</text>']
-    for i in range(5):
-        value = maximum * i / 4
-        parts.append(f'<path d="M{left} {y(value):.1f}H{right}" stroke="#2b3a41"/>')
-        parts.append(f'<text x="{left-8}" y="{y(value)+4:.1f}" text-anchor="end" font-size="12">{value:g}</text>')
-    slot = (right - left) / max(len(records), 1)
-    bar = min(42, slot * .65)
-    for index, (record, (first, second)) in enumerate(zip(records, values)):
-        x = left + slot * (index + .5)
-        label = record["published_at"][:10]
-        parts.append(f'<text x="{x:.1f}" y="314" transform="rotate(35 {x:.1f} 314)" font-size="11">{label}</text>')
-        parts.append(f'<g><title>{escape(record["tag"])}</title>')
-        if first is not None:
-            parts.append(f'<rect x="{x-bar/2:.1f}" y="{y(first):.1f}" width="{bar:.1f}" height="{bottom-y(first):.1f}" fill="#72e6ec"/>')
-        if second is not None:
-            base = first if first is not None else 0
-            fill = '#3c7b77' if first is not None else 'none'
-            parts.append(f'<rect x="{x-bar/2:.1f}" y="{y(second):.1f}" width="{bar:.1f}" height="{y(base)-y(second):.1f}" fill="{fill}" stroke="#3c7b77"/>')
-        value = second if second is not None else first
-        if value is not None:
-            parts.append(f'<text x="{x:.1f}" y="{y(value)-8:.1f}" text-anchor="middle" font-size="13">{value}</text>')
-        else:
-            parts.append(f'<text x="{x:.1f}" y="{bottom-9}" text-anchor="middle" font-size="16">—</text>')
-        for offset, key in [(-9, "24h"), (9, "72h")]:
-            snapshot = record["snapshots"][key]
-            if snapshot and snapshot["status"] == "late" and not snapshot["issues"]:
-                count = sum(a["download_count"] for a in snapshot["assets"])
-                age = (timestamp(snapshot["captured_at"]) - timestamp(record["published_at"])).total_seconds() / 3600
-                parts.append(f'<circle cx="{x+offset:.1f}" cy="{y(count):.1f}" r="5" fill="none" stroke="#fc7a0f" stroke-width="2"><title>{count} downloads measured after {age:.1f} h ({escape(snapshot["captured_at"])})</title></circle>')
-        parts.append('</g>')
-    if not late_values and not any(v is not None for pair in values for v in pair):
-        parts.append('<text x="377" y="178" text-anchor="middle" font-size="16">Awaiting valid snapshots</text>')
-    parts.extend(['<text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Orange circles: late observations; see table for actual time</text>', '</g></svg>'])
+             '<desc id="desc">Independent 24 and 72 hour measurements. Striped bars are late observations, labelled with their actual measurement time. Missing and invalid measurements have no bar.</desc>',
+             '<defs><pattern id="late" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V8" stroke="#f4f1e9" stroke-width="2"/></pattern></defs>',
+             f'<rect width="720" height="{height}" fill="#f4f1e9"/>',
+             '<g font-family="system-ui,sans-serif" fill="#1f1d19">',
+             '<text x="24" y="30" font-size="17">APK downloads per measurement</text>']
+    for index, record in enumerate(records):
+        y = 64 + index * 114
+        label = escape(record["tag"].removeprefix("nightly/").removeprefix("v"))
+        parts.append(f'<text x="24" y="{y}" font-size="13">{label}</text>')
+        for row, key in enumerate(("24h", "72h")):
+            yy = y + 25 + row * 29
+            snap = record["snapshots"][key]
+            parts.append(f'<text x="24" y="{yy+4}" font-size="12" fill="#5d5a52">{key[:-1]} h</text>')
+            parts.append(f'<path d="M76 {yy}H476" stroke="#d8d0bf" stroke-width="10"/>')
+            if not snap or snap["status"] == "invalid" or snap.get("issues"):
+                label = 'Invalid' if snap else 'Pending'
+            else:
+                count = sum(a["download_count"] for a in snap["assets"])
+                age = (timestamp(snap["captured_at"]) - timestamp(record["published_at"])).total_seconds() / 3600
+                bar_width = 400 * count / maximum
+                color = '#2f80ed' if row == 0 else '#5d5a52'
+                parts.append(f'<rect data-measurement="{key}" x="76" y="{yy-5}" width="{bar_width:.2f}" height="10" fill="{color}"/>')
+                late = snap["status"] == "late"
+                if late:
+                    parts.append(f'<rect x="76" y="{yy-5}" width="{bar_width:.2f}" height="10" fill="url(#late)"/>')
+                label = f'{count} · at {age:.1f} h' + (' · late' if late else '')
+            parts.append(f'<text x="492" y="{yy+4}" font-size="12">{label}</text>')
+    if not records:
+        parts.append('<text x="24" y="92" font-size="14">Awaiting measurements</text>')
+    parts.extend([f'<text x="24" y="{height-18}" font-size="12" fill="#5d5a52">Striped: collected late. Each bar shows the total at its actual measurement time.</text>', '</g></svg>'])
     return '\n'.join(parts) + '\n'
 
 

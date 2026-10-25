@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { measurement, statisticsStatus } from '../../release-statistics.mjs';
+import { measurement, statisticsStatus, chartMeasurement } from '../../release-statistics.mjs';
 
 assert.equal(measurement(null).label, 'Pending');
 for (const status of ['late', 'invalid']) {
@@ -14,3 +14,12 @@ const schedule = {releases: [], last_checked_at: '2026-10-14T12:00:00Z', next_pu
 assert.match(statisticsStatus(schedule,new Date('2026-10-14T20:00:00Z')), /Next update planned:/);
 assert.match(statisticsStatus(schedule,new Date('2026-10-16T20:00:00Z')), /daily at 03:17 UTC/);
 assert.doesNotMatch(statisticsStatus(schedule,new Date('2026-10-16T20:00:00Z')), /Next update planned:/);
+
+const release = {published_at: '2026-10-01T00:00:00Z', snapshots: {}};
+assert.deepEqual(chartMeasurement(release, '24h'), {state: 'pending', count: null, detail: 'Pending'});
+release.snapshots['24h'] = {status: 'late', captured_at: '2026-10-02T06:00:00Z', assets: [{download_count: 25}]};
+assert.deepEqual(chartMeasurement(release, '24h'), {state: 'late', count: 25, detail: 'Measured at 30.0 h · late'});
+release.snapshots['24h'].issues = ['asset_changed'];
+assert.equal(chartMeasurement(release, '24h').count, null);
+release.snapshots['24h'] = {status: 'captured', captured_at: '2026-10-02T00:00:00Z', assets: [{download_count: 0}]};
+assert.equal(chartMeasurement(release, '24h').count, 0);

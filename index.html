@@ -417,9 +417,22 @@
       .release-statistics { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
       .release-statistics > p, .star-history p { color: var(--muted); }
       .statistics-results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
-      .statistics-channel img, .star-history img { display: block; width: 100%; height: auto; }
+      .star-history img { display: block; width: 100%; height: auto; }
       .statistics-channel { min-width: 0; max-width: 840px; }
       .statistics-channel h3 { margin-bottom: 16px; }
+      .download-chart { margin-block: 28px; display: grid; gap: 28px; }
+      .download-release { display: grid; gap: 9px; }
+      .download-release > a { font-size: .9rem; overflow-wrap: anywhere; }
+      .download-measurement { display: grid; grid-template-columns: 46px minmax(0, 1fr) 150px; align-items: center; gap: 14px; font-size: .85rem; }
+      .download-target, .download-value small { color: var(--muted); }
+      .download-track { height: 12px; background: var(--line); }
+      .download-bar { display: block; height: 100%; background: var(--accent); }
+      .download-measurement[data-target="72h"] .download-bar { background: var(--text); }
+      .download-measurement[data-state="late"] .download-bar { background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--bg) 5px 7px); }
+      .download-value { font-variant-numeric: tabular-nums; }
+      .download-value small { display: block; font-size: .78rem; }
+      .chart-note { color: var(--muted); font-size: .85rem; }
+      @media (max-width: 640px) { .download-measurement { grid-template-columns: 38px minmax(0, 1fr) 116px; gap: 8px; } }
       .statistics-channel summary { padding: 16px 0; cursor: pointer; }
       .table-scroll { overflow-x: auto; }
       .table-scroll table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: .9rem; }
@@ -694,7 +707,7 @@
 
           <div class="release-statistics" aria-labelledby="statistics-heading" data-reveal>
             <h3 id="statistics-heading">Release download statistics</h3>
-            <p>Current APK download counts and fixed 24/72-hour comparisons per release. Late observations include their actual elapsed time; counts combine the available APK variants.</p>
+            <p>Current APK download counts and measurements targeting 24 and 72 hours after each release. Every measurement shows its actual time; counts combine the available APK variants.</p>
             <p id="statistics-status" role="status">Loading release statistics…</p>
             <div id="statistics-results" class="statistics-results" hidden></div>
             <p>Downloads do not identify unique users or installations. Missing measurements are shown as gaps.</p>
@@ -771,7 +784,7 @@
       </div>
     </dialog>
 
-    <script type="module" src="/release-statistics.mjs?v=8bb9fccb41dd"></script>
+    <script type="module" src="/release-statistics.mjs?v=558345d05015"></script>
     <script type="module" src="/plektra/assets/star-history.js?v=5a46d8a0ec81"></script>
     <script type="module">
       import { findAsset, formatDate, latestRelease, versionOf } from "/plektra/assets/releases.js";

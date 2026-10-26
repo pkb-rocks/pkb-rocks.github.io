@@ -41,7 +41,8 @@
 </g>
 <text x="635.4" y="314" transform="rotate(35 635.4 314)" font-size="11">2026-10-25</text>
 <g><title>nightly/v26.10-nightly.25.221136Z</title>
-<text x="635.4" y="283" text-anchor="middle" font-size="16">—</text>
+<rect x="614.4" y="222.2" width="42.0" height="69.8" fill="#72e6ec"/>
+<text x="635.4" y="214.2" text-anchor="middle" font-size="13">154</text>
 </g>
 <text x="18" y="383" font-size="12" fill="#a9bbc0">APKs combined · Orange circles: late observations; see table for actual time</text>
 </g></svg>

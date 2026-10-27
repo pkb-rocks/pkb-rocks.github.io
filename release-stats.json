@@ -45,7 +45,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-26T22:44:01Z",
+        "captured_at": "2026-10-27T03:17:01Z",
         "assets": [
           {
             "asset_id": 619966095,
@@ -98,7 +98,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-26T22:44:01Z",
+        "captured_at": "2026-10-27T03:17:01Z",
         "assets": [
           {
             "asset_id": 623044335,
@@ -164,7 +164,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-26T22:44:01Z",
+        "captured_at": "2026-10-27T03:17:01Z",
         "assets": [
           {
             "asset_id": 626154944,
@@ -236,7 +236,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-26T22:44:01Z",
+        "captured_at": "2026-10-27T03:17:01Z",
         "assets": [
           {
             "asset_id": 631547206,
@@ -308,7 +308,7 @@
         }
       },
       "current": {
-        "captured_at": "2026-10-26T22:44:01Z",
+        "captured_at": "2026-10-27T03:17:01Z",
         "assets": [
           {
             "asset_id": 656979007,
@@ -320,7 +320,7 @@
             "asset_id": 656979987,
             "name": "Plektra-26.10-no-accessibility.apk",
             "created_at": "2026-10-19T17:46:45Z",
-            "download_count": 1716
+            "download_count": 1732
           }
         ]
       }
@@ -361,13 +361,13 @@
         "72h": null
       },
       "current": {
-        "captured_at": "2026-10-26T22:44:01Z",
+        "captured_at": "2026-10-27T03:17:01Z",
         "assets": [
           {
             "asset_id": 676298536,
             "name": "Plektra-26.10-nightly.25.221136Z-full.apk",
             "created_at": "2026-10-25T22:30:57Z",
-            "download_count": 145
+            "download_count": 161
           },
           {
             "asset_id": 676298904,
@@ -379,8 +379,8 @@
       }
     }
   ],
-  "last_checked_at": "2026-10-26T22:44:01Z",
+  "last_checked_at": "2026-10-27T03:17:01Z",
   "next_measurement_at": "2026-10-28T22:43:30Z",
-  "next_collection_at": "2026-10-26T22:49:00Z",
-  "next_publication_at": "2026-10-27T03:17:00Z"
+  "next_collection_at": "2026-10-27T03:22:00Z",
+  "next_publication_at": "2026-10-28T03:17:00Z"
 }

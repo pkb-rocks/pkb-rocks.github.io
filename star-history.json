@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "repository": "pkb-rocks/plektra",
-  "count": 28,
+  "count": 29,
   "weeks": [
     {
       "week": 1786838400,
@@ -148,7 +148,7 @@
     },
     {
       "week": 1793491200,
-      "total": 1,
+      "total": 2,
       "days": [
         0,
         0,
@@ -156,9 +156,9 @@
         0,
         0,
         1,
-        0
+        1
       ]
     }
   ],
-  "updated_at": "2026-11-07T03:17:02Z"
+  "updated_at": "2026-11-08T03:22:03Z"
 }

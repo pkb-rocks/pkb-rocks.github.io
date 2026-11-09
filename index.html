@@ -271,6 +271,7 @@
       .devices div:nth-child(n + 3) { border-top: 1px solid var(--line); margin-top: 26px; }
       .devices h3 { font-size: 1.9rem; }
       .devices p { margin: 8px 0 0; color: var(--muted); font-size: .98rem; }
+      .devices .device-status { color: var(--accent-text); font-weight: 600; }
       .devices-note { margin-top: 36px; color: var(--muted); }
 
       /* Build */
@@ -404,7 +405,7 @@
         .support-link img { width: 100%; max-width: 180px; }
         .switch { grid-column: 2; grid-row: 2; }
         .grid, .both-cases, .devices { grid-template-columns: 1fr; }
-        .devices div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 26px; }
+        .devices div:nth-child(even), .devices div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 26px; }
         .channel { padding: 26px; }
         section { padding: 76px 0; }
         .hero { padding-top: 56px; }
@@ -493,8 +494,8 @@
           <p class="hero-meta" data-hero-meta data-reveal>Stable is for everyday use. Nightly gets new features first.</p>
         </div>
         <div class="hero-shot" data-reveal>
-          <img src="/plektra/assets/shots/stable/01-devices.webp?v=3e86c067e1b8" data-shot="01-devices" width="1320" height="996"
-               alt="Plektra on a Unihertz Titan 2, a Titan 2 Elite and a Pixel 7a, each suggesting “tomorrow” in a note" data-shot-version="3e86c067e1b8">
+          <img src="/plektra/assets/shots/stable/01-devices.webp?v=113f2168fb16" data-shot="01-devices" width="1320" height="996"
+               alt="Plektra on a Titan 2, Titan 2 Elite, upcoming Clicks Communicator and Pixel 7a, each suggesting “tomorrow” in a note" data-shot-version="113f2168fb16">
         </div>
       </div>
 
@@ -730,6 +731,12 @@
             <div data-reveal><h3>Titan 2 Elite</h3><p>Release-tested. Device-specific keyboard layouts and display geometry.</p></div>
             <div data-reveal><h3>Pixel 7a + Clicks</h3><p>Directly tested with the Clicks Power Keyboard.</p></div>
             <div data-reveal><h3>Galaxy Z Fold6</h3><p>Directly tested for software keyboard use and folding behaviour, with Clicks Power Keyboard support. Further foldable improvements are planned.</p></div>
+            <div data-reveal>
+              <h3>Clicks Communicator</h3>
+              <p class="device-status">Upcoming</p>
+              <p>Plektra support planned.</p>
+              <p><a href="https://www.clicksphone.com/communicator">Explore the Communicator</a></p>
+            </div>
           </div>
           <p class="devices-note">Community-supported devices include the BlackBerry KEY2, Minimal Phone MP01 and BlackBerry Q25 (Zinwa mod), alongside other Clicks keyboard models. See the <a href="https://github.com/pkb-rocks/plektra/blob/main/docs/devices.md">device support ranking</a>.</p>
         </div>
